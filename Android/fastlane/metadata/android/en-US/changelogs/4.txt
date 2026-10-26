@@ -1,0 +1,1 @@
+Fixed transfer across app updates: the «Allow FireDrop on the network» button in Windows settings recreates the firewall rules. Added an about page and faster QR code recognition.

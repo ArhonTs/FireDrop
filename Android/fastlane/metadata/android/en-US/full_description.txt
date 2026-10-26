@@ -1,0 +1,12 @@
+FireDrop moves files and whole folders directly between devices on the same local Wi-Fi network - phone to computer, computer to phone, and phone to phone. No internet, no cloud, no accounts: the transfer does not leave the room.
+
+Features:
+- Folders are sent whole; nested folder structure is preserved.
+- Speed is limited only by the Wi-Fi network (tens of MB/s is realistic).
+- Connection by scanning a QR code or by a six-digit code with limited attempts.
+- Incoming files are never overwritten: duplicates get number-suffixed names (((1), (2)...)).
+- Works in the foreground service when receiving, with a persistent status notification.
+
+Traffic is plain HTTP inside the local network only. The app serves and connects to explicit IP:port addresses shown on the screen; no data is sent elsewhere.
+
+Licensed under the GNU GPL v3 or later; the source code is open.

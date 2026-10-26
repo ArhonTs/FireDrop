@@ -1,0 +1,8 @@
+# Normalize text files (repo stores LF).
+* text=auto
+
+# Shell scripts must stay LF everywhere - the F-Droid build server is Linux.
+*.sh text eol=lf
+
+# Images are binary.
+*.png binary

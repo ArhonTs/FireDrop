@@ -1,0 +1,1 @@
+The phone now warns on the receive screen when a VPN is active or the address is outside the home subnet (for example 10.x in a guest network). An empty device list explains common causes and suggests comparing subnets.

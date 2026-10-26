@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070b14">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex">
+  <title>Подключение — FireDrop</title>
+  <link rel="icon" href="/favicon-32.png" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="join-page">
+  <div class="ambient" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="grid-glow"></span>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="FireDrop">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M16 5v14m0 0-5.5-5.5M16 19l5.5-5.5M7 25h18"/></svg>
+      </span>
+      <span class="brand-text">
+        <strong>FireDrop</strong>
+        <small>Локальная передача файлов</small>
+      </span>
+    </a>
+    <span class="wifi-pill">
+      <span class="wifi-dot"></span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5a12 12 0 0 1 16 0M7 13a8 8 0 0 1 10 0M10 16.5a3.5 3.5 0 0 1 4 0"/><circle cx="12" cy="20" r="1"/></svg>
+      Wi-Fi
+    </span>
+  </header>
+
+  <main class="join-shell">
+    <section class="join-card">
+      <div class="join-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="3"/><path d="M8 10V8a4 4 0 0 1 8 0v2"/><circle cx="12" cy="15" r="1.2"/></svg>
+      </div>
+      <div class="eyebrow"><span class="live-dot"></span> Защищённое подключение</div>
+      <h1>Введите код<br><span>с экрана компьютера</span></h1>
+      <p class="join-sub">Шестизначный код показан под QR-кодом в приложении FireDrop на ПК.</p>
+
+      <form class="pin-form" id="joinForm" novalidate>
+        <label class="pin-label" for="pinInput">Код доступа</label>
+        <input
+          class="pin-input"
+          id="pinInput"
+          name="pin"
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          maxlength="6"
+          autocomplete="one-time-code"
+          placeholder="••••••"
+          aria-describedby="joinError"
+          autofocus>
+        <button class="primary-btn join-btn" id="joinBtn" type="submit">
+          <span id="joinBtnLabel">Подключиться</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m0 0-5-5m5 5-5 5"/></svg>
+        </button>
+      </form>
+
+      <p class="join-error" id="joinError" role="alert" hidden></p>
+
+      <div class="join-hint">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v3M17 20h4"/></svg>
+        Проще всего отсканировать QR-код камерой телефона — подключение произойдёт автоматически.
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer join-footer">
+    <span class="footer-brand"><span class="footer-dot"></span> FireDrop</span>
+    <span>Только ваша локальная сеть</span>
+  </footer>
+
+  <script src="/join.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FireDrop</string>
+    <string name="receive_channel">Приём файлов</string>
+    <string name="receive_channel_desc">Уведомление о работе приёма файлов</string>
+</resources>

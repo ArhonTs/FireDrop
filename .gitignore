@@ -1,0 +1,16 @@
+# Build artifacts and machine-local files must not be published.
+# In particular: Android/keystore/ holds the private signing key
+# (firedrop.jks) - losing it would break updates, publishing it would
+# allow anyone to sign fake FireDrop updates.
+
+FireDrop/bin/
+FireDrop/obj/
+dist/
+/*.zip
+
+Android/build/
+Android/libs/
+Android/keystore/
+
+verification/sender-harness/bin/
+verification/sender-harness/obj/

@@ -1,0 +1,49 @@
+# F-Droid build metadata for FireDrop.
+#
+# How to use: copy this file into the metadata/ directory of your local
+# fdroiddata checkout (https://gitlab.com/fdroid/fdroiddata) and run:
+#     fdroid build --verbose ru.firedrop.app
+# TODO before submitting: replace SourceCode / IssueTracker / Repo below with
+# the real public git repository (Codeberg, GitLab or GitHub).
+
+Categories:
+- Internet
+License: GPL-3.0-or-later
+AuthorName: LoioshS
+SourceCode: https://github.com/ArhonTs/FireDrop
+IssueTracker: https://github.com/ArhonTs/FireDrop/issues
+Name: FireDrop
+Summary: Fast file and folder transfer over the local Wi-Fi network
+Description: |-
+  FireDrop moves files and whole folders directly between devices on the same
+  local Wi-Fi network: phone to computer, computer to phone and phone to phone.
+  No internet, no cloud and no accounts - the transfer does not leave the room.
+
+  - Folders are sent whole: nested folder structure is preserved on the receiver.
+  - Speed is limited only by the Wi-Fi network (tens of MB/s is realistic);
+    nothing is uploaded anywhere in between.
+  - Connection by scanning a QR code or by a six-digit code with limited attempts.
+  - Incoming files are never overwritten: duplicates get number-suffixed names.
+  - Russian interface, plus localized descriptions here.
+
+  The traffic is plain HTTP inside the local network only: the app serves and
+  connects to explicit IP:port addresses the user sees on screen (a VPN must be
+  turned off - the app warns about that itself).
+
+  Licensed under the GNU GPL v3 or later; the source code is open.
+
+RepoType: git
+Repo: https://github.com/ArhonTs/FireDrop.git
+
+Builds:
+- versionName: '1.2.3'
+  versionCode: 6
+  commit: v1.2.3
+  output: Android/build/FireDrop-unsigned.apk
+  build: |-
+    bash Android/fdroid-build.sh
+
+AutoUpdateMode: Version v%v
+UpdateCheckMode: Tags ^v[\d.]+$
+CurrentVersion: 1.2.3
+CurrentVersionCode: 6

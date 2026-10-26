@@ -1,0 +1,26 @@
+﻿{
+    "rows":  1,
+    "status":  "done",
+    "name":  "FireDrop-final-ui-check.bin",
+    "pct":  "100%",
+    "stateText":  "Готово",
+    "speed":  "70,7 МБ/с",
+    "transferHidden":  false,
+    "overallLabel":  "Все файлы на компьютере",
+    "overallMeta":  "1 из 1 файлов",
+    "overallSpeed":  "0",
+    "overallUnit":  "МБ/с",
+    "overallBytes":  "2,00 МБ / 2,00 МБ",
+    "toast":  "Готово! Файлы сохранены на компьютере.",
+    "scrollY":  412,
+    "viewport":  {
+                     "w":  390,
+                     "h":  844,
+                     "dpr":  2
+                 },
+    "document":  {
+                     "scrollWidth":  390,
+                     "scrollHeight":  1256
+                 },
+    "url":  "http://192.168.1.104:47820/"
+}
