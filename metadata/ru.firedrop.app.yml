@@ -1,10 +1,9 @@
 # F-Droid build metadata for FireDrop.
 #
-# How to use: copy this file into the metadata/ directory of your local
+# How to submit: copy this file into the metadata/ directory of your local
 # fdroiddata checkout (https://gitlab.com/fdroid/fdroiddata) and run:
 #     fdroid build --verbose ru.firedrop.app
-# TODO before submitting: replace SourceCode / IssueTracker / Repo below with
-# the real public git repository (Codeberg, GitLab or GitHub).
+# Then open a merge request against fdroiddata.
 
 Categories:
 - Internet
