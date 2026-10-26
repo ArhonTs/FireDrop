@@ -217,7 +217,7 @@ public final class Ui {
     }
 
     public static String formatBytes(long bytes) {
-        String[] units = {"Б", "КБ", "МБ", "ГБ", "ТБ"};
+        String[] units = L10n.core("units.bytes").split(",");
         double value = bytes;
         int unit = 0;
         while (value >= 1024 && unit < units.length - 1) {
@@ -230,6 +230,6 @@ public final class Ui {
 
     public static String formatSpeed(double bytesPerSecond) {
         if (bytesPerSecond <= 1) return "";
-        return formatBytes((long) bytesPerSecond) + "/с";
+        return formatBytes((long) bytesPerSecond) + (L10n.isRu() ? "/с" : "/s");
     }
 }

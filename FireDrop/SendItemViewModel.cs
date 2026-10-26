@@ -14,7 +14,7 @@ public sealed class SendItemViewModel : INotifyPropertyChanged
     private static readonly Brush FailBrush = Frozen(Color.FromRgb(251, 113, 133));
 
     private PhoneSender.Item? _live;
-    private string _stateText = "в очереди";
+    private string _stateText = L10n.Get("ui.send.state.queued");
     private Brush _stateBrush = MutedBrush;
     private int _lastState = -1;
     private long _lastSent = -1;
@@ -34,7 +34,7 @@ public sealed class SendItemViewModel : INotifyPropertyChanged
         Title = relativePath.Length == 0 ? name : relativePath + "/" + name;
         Bytes = QuietSize(FullPath);
         SizeText = FileItemViewModel.FormatBytes(Bytes);
-        StateText = "в очереди";
+        StateText = L10n.Get("ui.send.state.queued");
     }
 
     /// <summary>Returns the row to its pre-sender state (used after a finished batch).</summary>
@@ -43,7 +43,7 @@ public sealed class SendItemViewModel : INotifyPropertyChanged
         _live = null;
         _lastState = -1;
         _lastSent = -1;
-        StateText = "в очереди";
+        StateText = L10n.Get("ui.send.state.queued");
         StateBrush = MutedBrush;
     }
 
@@ -73,7 +73,7 @@ public sealed class SendItemViewModel : INotifyPropertyChanged
         var item = _live;
         if (item is null)
         {
-            StateText = "в очереди";
+            StateText = L10n.Get("ui.send.state.queued");
             StateBrush = MutedBrush;
             return;
         }
@@ -89,19 +89,19 @@ public sealed class SendItemViewModel : INotifyPropertyChanged
                     StateBrush = LiveBrush;
                     break;
                 case PhoneSender.FileDone:
-                    StateText = "готово";
+                    StateText = L10n.Get("ui.send.state.done");
                     StateBrush = DoneBrush;
                     break;
                 case PhoneSender.FileError:
-                    StateText = item.Error.Length > 0 ? item.Error : "ошибка";
+                    StateText = item.Error.Length > 0 ? item.Error : L10n.Get("ui.send.state.error");
                     StateBrush = FailBrush;
                     break;
                 case PhoneSender.FileCancelled:
-                    StateText = "отменено";
+                    StateText = L10n.Get("ui.send.state.cancelled");
                     StateBrush = FailBrush;
                     break;
                 default:
-                    StateText = "в очереди";
+                    StateText = L10n.Get("ui.send.state.queued");
                     StateBrush = MutedBrush;
                     break;
             }
@@ -152,7 +152,7 @@ public sealed class SendDeviceViewModel
         Selected = selected;
         Name = device.Name;
         EndpointLabel = $"{device.Endpoint} · {device.KindText}";
-        SelectName = $"Устройство {device.Name}, {device.Endpoint}";
+        SelectName = L10n.S("ui.device.select.format", device.Name, device.Endpoint);
     }
 
     public LanDevice Device { get; }

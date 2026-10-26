@@ -79,8 +79,9 @@ public partial class MainWindow : Window
         PinItems.ItemsSource = _server.Pin.Select(ch => ch.ToString()).ToArray();
         AutomationProperties.SetName(
             PinItems,
-            $"Код доступа: {string.Join(" ", _server.Pin.Select(ch => ch.ToString()))}");
-        VersionText.Text = $"FireDrop {TransferServer.Version} · только локальная сеть";
+            L10n.S("ui.pin.automation.format",
+                string.Join(" ", _server.Pin.Select(ch => ch.ToString()))));
+        VersionText.Text = L10n.S("ui.version.format", TransferServer.Version);
         FolderPathText.Text = _uploads.SaveFolder;
         FolderPathText.ToolTip = _uploads.SaveFolder;
 
@@ -143,7 +144,7 @@ public partial class MainWindow : Window
 
         _initialized = true;
         CreateTrayIcon();
-        SetStatus("Запуск сервера…", WarningColor);
+        SetStatus(L10n.Get("ui.status.starting"), WarningColor);
 
         var running = await StartServerInternalAsync(_settings.Port);
         _statsTimer.Start();
@@ -188,7 +189,7 @@ public partial class MainWindow : Window
             {
                 _serverError = DescribeServerError(ex, port);
                 AppLog.Error($"Не удалось запустить сервер на порту {port}", ex);
-                SetStatus("Сервер не запущен", DangerColor);
+                SetStatus(L10n.Get("ui.state.server"), DangerColor);
                 UpdateConnectionUi();
                 UpdateFooter();
                 return false;
@@ -212,15 +213,15 @@ public partial class MainWindow : Window
         if (socket?.SocketErrorCode == SocketError.AddressAlreadyInUse ||
             ex.Message.Contains("address already in use", StringComparison.OrdinalIgnoreCase))
         {
-            return $"Порт {port} уже занят другой программой. Выберите другой порт в настройках.";
+            return L10n.S("ui.error.port.busy", port);
         }
 
         if (socket?.SocketErrorCode == SocketError.AccessDenied)
         {
-            return $"Windows не разрешила открыть порт {port}. Попробуйте порт больше 1024.";
+            return L10n.S("ui.error.port.denied", port);
         }
 
-        return $"Не удалось запустить сервер на порту {port}. Проверьте настройки и попробуйте снова.";
+        return L10n.S("ui.error.port.generic", port);
     }
 
     private static SocketException? FindSocketException(Exception? ex)
@@ -251,18 +252,18 @@ public partial class MainWindow : Window
         }
 
         var selected = CurrentAddress;
-        AddressText.Text = selected?.Display ?? "Сеть не найдена";
+        AddressText.Text = selected?.Display ?? L10n.Get("ui.network.notfound");
         AddressText.ToolTip = selected is null
-            ? "Подключите компьютер к Wi-Fi"
+            ? L10n.Get("ui.network.nowifi.tooltip")
             : $"{selected.Description} · {selected.Ip}";
         AddressButton.ToolTip = _addresses.Count > 1
-            ? "Выбрать сетевой адрес"
-            : "Обновить список сетей";
+            ? L10n.Get("ui.address.tooltip")
+            : L10n.Get("ui.address.refresh.tooltip");
         AutomationProperties.SetName(
             AddressButton,
             selected is null
-                ? "Сетевой адрес: сеть не найдена"
-                : $"Сетевой адрес: {selected.Display}");
+                ? L10n.Get("ui.address.automation.none")
+                : L10n.S("ui.address.automation.format", selected.Display));
 
         UpdateConnectionUi();
 
@@ -275,7 +276,7 @@ public partial class MainWindow : Window
         var address = CurrentAddress;
         var running = _server.IsRunning;
 
-        QrLiveText.Text = running ? "онлайн" : "офлайн";
+        QrLiveText.Text = running ? L10n.Get("ui.status.online") : L10n.Get("ui.status.offline");
         QrLiveText.Foreground = Frozen(running ? SuccessColor : DangerColor);
         QrLiveDot.Fill = Frozen(running ? SuccessColor : DangerColor);
 
@@ -287,9 +288,9 @@ public partial class MainWindow : Window
             CopyPinButton.IsEnabled = false;
             AddressButton.IsEnabled = false;
             ShowQrState(
-                "Сервер не запущен",
-                _serverError ?? "Проверьте настройки и попробуйте запустить сервер ещё раз.",
-                "Повторить",
+                L10n.Get("ui.state.server"),
+                _serverError ?? L10n.Get("ui.qr.server.retry.hint"),
+                L10n.Get("ui.action.retry"),
                 serverMode: true);
             return;
         }
@@ -303,16 +304,16 @@ public partial class MainWindow : Window
             UrlText.Text = "http://—";
             CopyLinkButton.IsEnabled = false;
             ShowQrState(
-                "Компьютер без Wi-Fi",
-                "Подключите компьютер к той же Wi-Fi сети, что и телефон.",
-                "Обновить",
+                L10n.Get("ui.qr.nowifi.title"),
+                L10n.Get("ui.qr.nowifi.hint"),
+                L10n.Get("ui.action.refresh"),
                 serverMode: false);
             return;
         }
 
         QrCodeImage.Text = _server.BuildUrl(address.Ip, includeToken: true);
         UrlText.Text = _server.BuildUrl(address.Ip, includeToken: false);
-        UrlText.ToolTip = "Введите этот адрес в браузере телефона и укажите код доступа.";
+        UrlText.ToolTip = L10n.Get("ui.url.tooltip");
         CopyLinkButton.IsEnabled = true;
         QrStatePanel.Visibility = Visibility.Collapsed;
     }
@@ -330,11 +331,11 @@ public partial class MainWindow : Window
     private void ResetConnectionStatus()
     {
         if (!_server.IsRunning)
-            SetStatus("Сервер не запущен", DangerColor);
+            SetStatus(L10n.Get("ui.state.server"), DangerColor);
         else if (CurrentAddress is null)
-            SetStatus("Нет Wi-Fi", WarningColor);
+            SetStatus(L10n.Get("ui.status.nowifi"), WarningColor);
         else
-            SetStatus("Готово к приёму", SuccessColor);
+            SetStatus(L10n.Get("ui.status.ready"), SuccessColor);
     }
 
     private void SetStatus(string text, Color color)
@@ -351,8 +352,8 @@ public partial class MainWindow : Window
         var running = _server.IsRunning;
         FooterStateDot.Fill = Frozen(running ? SuccessColor : DangerColor);
         FooterStateText.Text = running
-            ? $"Сервер работает · порт {_server.Port}"
-            : "Сервер не запущен";
+            ? L10n.S("ui.footer.running.format", _server.Port)
+            : L10n.Get("ui.state.server");
     }
 
     private void OnClientActivity()
@@ -360,7 +361,7 @@ public partial class MainWindow : Window
         RunOnUi(() =>
         {
             if (_shuttingDown || !_server.IsRunning) return;
-            SetStatus("Телефон на связи", AccentColor);
+            SetStatus(L10n.Get("ui.status.phoneconnected"), AccentColor);
             _activityTimer.Stop();
             _activityTimer.Start();
         });
@@ -386,8 +387,10 @@ public partial class MainWindow : Window
 
         SpeedValueText.Text = FileItemViewModel.FormatSpeed(snapshot.Speed);
         SpeedHintText.Text = snapshot.Active.Count == 0
-            ? "ожидание"
-            : $"{snapshot.Active.Count} {Plural(snapshot.Active.Count, "файл", "файла", "файлов")} в процессе";
+            ? L10n.Get("ui.status.waiting")
+            : L10n.S("ui.stats.inprogress",
+                snapshot.Active.Count,
+                Plural(snapshot.Active.Count, L10n.Get("ui.plural.file.one"), L10n.Get("ui.plural.file.few"), L10n.Get("ui.plural.file.many")));
         FilesValueText.Text = snapshot.CompletedCount.ToString("N0", CultureInfo.CurrentCulture);
         VolumeValueText.Text = FileItemViewModel.FormatBytes(snapshot.CompletedBytes);
         UpdateFileChrome();
@@ -426,9 +429,11 @@ public partial class MainWindow : Window
         UpdateFileChrome();
 
         var cancelled = reason.Contains("отмен", StringComparison.OrdinalIgnoreCase) ||
-                        reason.Contains("истекло", StringComparison.OrdinalIgnoreCase);
+                        reason.Contains("cancell", StringComparison.OrdinalIgnoreCase) ||
+                        reason.Contains("истекло", StringComparison.OrdinalIgnoreCase) ||
+                        reason.Contains("timed out", StringComparison.OrdinalIgnoreCase);
         ShowToast(
-            cancelled ? "Передача отменена" : $"Не удалось принять файл: {reason}",
+            cancelled ? L10n.Get("ui.toast.receiving.cancelled") : L10n.S("ui.toast.receive.failed", reason),
             cancelled ? ToastKind.Info : ToastKind.Error,
             4200);
     }
@@ -464,7 +469,7 @@ public partial class MainWindow : Window
 
         FilesList.SelectedItem = null;
         UpdateFileChrome();
-        ShowToast("История очищена", ToastKind.Info, 2000);
+        ShowToast(L10n.Get("ui.toast.history.cleared"), ToastKind.Info, 2000);
     }
 
     private void FilesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -480,7 +485,7 @@ public partial class MainWindow : Window
         {
             if (!File.Exists(item.FullPath))
             {
-                ShowToast("Файл больше не существует по этому пути.", ToastKind.Error);
+                ShowToast(L10n.Get("ui.toast.file.missing"), ToastKind.Error);
                 return;
             }
 
@@ -489,7 +494,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             AppLog.Error($"Не удалось открыть файл {item.FullPath}", ex);
-            ShowToast("Не удалось открыть файл. Попробуйте открыть папку.", ToastKind.Error);
+            ShowToast(L10n.Get("ui.toast.file.open.failed"), ToastKind.Error);
         }
     }
 
@@ -516,7 +521,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             AppLog.Error($"Не удалось открыть папку {folder}", ex);
-            ShowToast("Не удалось открыть папку.", ToastKind.Error);
+            ShowToast(L10n.Get("ui.toast.folder.open.failed"), ToastKind.Error);
         }
     }
 
@@ -530,24 +535,24 @@ public partial class MainWindow : Window
         var address = CurrentAddress;
         if (!_server.IsRunning || address is null)
         {
-            ShowToast("Сначала подключите компьютер к Wi-Fi.", ToastKind.Error);
+            ShowToast(L10n.Get("ui.toast.need.wifi"), ToastKind.Error);
             return;
         }
 
         if (CopyText(_server.BuildUrl(address.Ip, includeToken: true)))
-            ShowToast("Ссылка с доступом скопирована", ToastKind.Success, 2400);
+            ShowToast(L10n.Get("ui.toast.link.copied"), ToastKind.Success, 2400);
     }
 
     private void CopyPin_Click(object sender, RoutedEventArgs e)
     {
         if (!_server.IsRunning)
         {
-            ShowToast("Сервер ещё не запущен.", ToastKind.Error);
+            ShowToast(L10n.Get("ui.toast.server.notstarted"), ToastKind.Error);
             return;
         }
 
         if (CopyText(_server.Pin))
-            ShowToast("Код доступа скопирован", ToastKind.Success, 2400);
+            ShowToast(L10n.Get("ui.toast.pin.copied"), ToastKind.Success, 2400);
     }
 
     private bool CopyText(string text)
@@ -560,7 +565,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             AppLog.Error("Не удалось скопировать текст в буфер обмена", ex);
-            ShowToast("Не удалось скопировать. Попробуйте ещё раз.", ToastKind.Error);
+            ShowToast(L10n.Get("ui.toast.copy.failed"), ToastKind.Error);
             return false;
         }
     }
@@ -575,7 +580,7 @@ public partial class MainWindow : Window
 
         if (_addresses.Count == 0)
         {
-            menu.Items.Add(new MenuItem { Header = "Сеть не найдена", IsEnabled = false });
+            menu.Items.Add(new MenuItem { Header = L10n.Get("ui.network.notfound"), IsEnabled = false });
         }
         else
         {
@@ -593,13 +598,13 @@ public partial class MainWindow : Window
             }
         }
 
-        var refresh = new MenuItem { Header = "Обновить список" };
+        var refresh = new MenuItem { Header = L10n.Get("ui.address.menu.refresh") };
         refresh.Click += (_, _) => RefreshAddresses();
         menu.Items.Add(refresh);
 
         if (_addresses.Count > 0 && _manualAddressSelection)
         {
-            var automatic = new MenuItem { Header = "Выбирать автоматически" };
+            var automatic = new MenuItem { Header = L10n.Get("ui.address.menu.auto") };
             automatic.Click += (_, _) =>
             {
                 _manualAddressSelection = false;
@@ -627,7 +632,7 @@ public partial class MainWindow : Window
         {
             RefreshAddresses();
             if (CurrentAddress is not null)
-                ShowToast("Сеть найдена", ToastKind.Success, 1800);
+                ShowToast(L10n.Get("ui.toast.network.found"), ToastKind.Success, 1800);
             return;
         }
 
@@ -638,15 +643,15 @@ public partial class MainWindow : Window
     {
         if (_initialized && !_shuttingDown)
         {
-            SetStatus("Запуск сервера…", WarningColor);
+            SetStatus(L10n.Get("ui.status.starting"), WarningColor);
             QrStateAction.IsEnabled = false;
             var started = await StartServerInternalAsync(_settings.Port);
             QrStateAction.IsEnabled = true;
 
             if (started)
-                ShowToast("Сервер запущен", ToastKind.Success);
+                ShowToast(L10n.Get("ui.toast.server.started"), ToastKind.Success);
             else
-                ShowToast(_serverError ?? "Не удалось запустить сервер.", ToastKind.Error, 5200);
+                ShowToast(_serverError ?? L10n.Get("ui.toast.server.startfailed"), ToastKind.Error, 5200);
         }
     }
 
@@ -665,8 +670,8 @@ public partial class MainWindow : Window
         SaveFolderBox.Text = _uploads.SaveFolder;
         PortBox.Text = _settings.Port.ToString(CultureInfo.InvariantCulture);
         CurrentPortText.Text = _server.IsRunning
-            ? $"Сервер работает на порту {_server.Port}"
-            : "Сервер сейчас не запущен";
+            ? L10n.S("ui.port.current.format", _server.Port)
+            : L10n.Get("ui.port.stopped");
         AutostartCheck.IsChecked = _settings.StartWithWindows;
         TrayCheck.IsChecked = _settings.MinimizeToTrayOnClose;
         HideSettingsError();
@@ -747,7 +752,7 @@ public partial class MainWindow : Window
         {
             using var dialog = new Forms.FolderBrowserDialog
             {
-                Description = "Куда сохранять принятые файлы",
+                Description = L10n.Get("ui.dialog.savefolder"),
                 UseDescriptionForTitle = true,
                 ShowNewFolderButton = true,
                 SelectedPath = Directory.Exists(SaveFolderBox.Text) ? SaveFolderBox.Text : _uploads.SaveFolder,
@@ -760,7 +765,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             AppLog.Error("Не удалось открыть выбор папки", ex);
-            ShowSettingsError("Не удалось открыть выбор папки.");
+            ShowSettingsError(L10n.Get("ui.error.folder.dialog"));
         }
     }
 
@@ -773,7 +778,7 @@ public partial class MainWindow : Window
         var deviceName = DeviceNameBox.Text.Trim();
         if (deviceName.Length is < 1 or > 40)
         {
-            ShowSettingsError("Имя компьютера должно быть от 1 до 40 символов.");
+            ShowSettingsError(L10n.Get("ui.error.name.length"));
             DeviceNameBox.Focus();
             return;
         }
@@ -781,7 +786,7 @@ public partial class MainWindow : Window
         if (!int.TryParse(PortBox.Text.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var port) ||
             port is < 1024 or > 65535)
         {
-            ShowSettingsError("Порт должен быть числом от 1024 до 65535.");
+            ShowSettingsError(L10n.Get("ui.error.port.range"));
             PortBox.Focus();
             return;
         }
@@ -789,7 +794,7 @@ public partial class MainWindow : Window
         var folder = SaveFolderBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(folder))
         {
-            ShowSettingsError("Укажите папку для сохранения файлов.");
+            ShowSettingsError(L10n.Get("ui.error.folder.required"));
             SaveFolderBox.Focus();
             return;
         }
@@ -802,7 +807,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             AppLog.Error($"Недоступна папка сохранения {folder}", ex);
-            ShowSettingsError("Не удалось использовать эту папку. Проверьте путь и права доступа.");
+            ShowSettingsError(L10n.Get("ui.error.folder.invalid"));
             SaveFolderBox.Focus();
             return;
         }
@@ -812,25 +817,25 @@ public partial class MainWindow : Window
 
         _savingSettings = true;
         SaveSettingsButton.IsEnabled = false;
-        SaveSettingsButton.Content = "Сохранение…";
+        SaveSettingsButton.Content = L10n.Get("ui.action.saving");
 
         try
         {
             if (portChanged || !wasRunning)
             {
-                SetStatus("Перезапуск сервера…", WarningColor);
+                SetStatus(L10n.Get("ui.status.restarting"), WarningColor);
                 var started = await StartServerInternalAsync(port);
                 if (_shuttingDown) return;
 
                 if (!started)
                 {
-                    var failure = _serverError ?? "Не удалось запустить сервер на выбранном порту.";
+                    var failure = _serverError ?? L10n.Get("ui.error.port.restartfailed");
 
                     if (wasRunning)
                     {
                         var restored = await StartServerInternalAsync(_settings.Port);
                         if (!restored)
-                            SetStatus("Сервер не запущен", DangerColor);
+                            SetStatus(L10n.Get("ui.state.server"), DangerColor);
                     }
 
                     ShowSettingsError(failure);
@@ -857,18 +862,18 @@ public partial class MainWindow : Window
             if (_server.IsRunning)
                 ResetConnectionStatus();
 
-            ShowToast("Настройки сохранены", ToastKind.Success);
+            ShowToast(L10n.Get("ui.toast.saved"), ToastKind.Success);
         }
         catch (Exception ex)
         {
             AppLog.Error("Не удалось сохранить настройки", ex);
-            ShowSettingsError($"Не удалось сохранить настройки: {ex.Message}");
+            ShowSettingsError(L10n.S("ui.error.save.format", ex.Message));
         }
         finally
         {
             _savingSettings = false;
             SaveSettingsButton.IsEnabled = true;
-            SaveSettingsButton.Content = "Сохранить";
+            SaveSettingsButton.Content = L10n.Get("ui.action.save");
         }
     }
 
@@ -921,8 +926,8 @@ public partial class MainWindow : Window
         MainContent.IsEnabled = false;
         FooterBar.IsEnabled = false;
 
-        AboutVersionText.Text = "FireDrop " + (Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.2.1")
-                                + " · только локальная сеть";
+        AboutVersionText.Text = L10n.S("ui.version.format",
+            Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.2.1");
 
         AboutOverlay.Visibility = Visibility.Visible;
         AboutOverlay.Opacity = 0;
@@ -988,7 +993,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             AppLog.Error("Не удалось открыть Telegram автора", ex);
-            ShowToast("Откройте в браузере: t.me/LoioshS", ToastKind.Info);
+            ShowToast(L10n.Get("ui.toast.author.link"), ToastKind.Info);
         }
     }
 
@@ -998,7 +1003,7 @@ public partial class MainWindow : Window
         _firewallChecking = true;
 
         FirewallButton.IsEnabled = false;
-        FirewallStatusText.Text = "Проверяем правила брандмауэра…";
+        FirewallStatusText.Text = L10n.Get("ui.firewall.checking");
 
         try
         {
@@ -1020,7 +1025,9 @@ public partial class MainWindow : Window
         FirewallButton.Visibility = status.Allowed
             ? Visibility.Collapsed
             : Visibility.Visible;
-        FirewallButton.Content = status.Allowed ? "Разрешено" : "Разрешить FireDrop в сети";
+        FirewallButton.Content = status.Allowed
+            ? L10n.Get("ui.firewall.allowed")
+            : L10n.Get("ui.firewall.button");
     }
 
     private async void FirewallButton_Click(object sender, RoutedEventArgs e)
@@ -1031,14 +1038,14 @@ public partial class MainWindow : Window
         _firewallFixing = true;
         source.IsEnabled = false;
 
-        FirewallStatusText.Text = "Подтвердите запрос Windows — нужны права администратора…";
+        FirewallStatusText.Text = L10n.Get("ui.firewall.confirming");
         FirewallStatusText.SetResourceReference(TextBlock.ForegroundProperty, "AccentBrush");
 
         try
         {
             var status = await FirewallHelper.EnsureAllowedAsync(_server.Port);
             ApplyFirewallStatus(status);
-            ShowToast(status.Allowed ? "Брандмауэр настроен" : "Не удалось изменить брандмауэр",
+            ShowToast(status.Allowed ? L10n.Get("ui.toast.firewall.ok") : L10n.Get("ui.toast.firewall.fail"),
                 status.Allowed ? ToastKind.Success : ToastKind.Error);
 
             if (status.Allowed && _sendVisible && _foundDevices.Count == 0)
@@ -1138,7 +1145,7 @@ public partial class MainWindow : Window
         if (_sendPhase != SendPhase.Idle || !button.IsEnabled) return;
 
         button.IsEnabled = false;
-        SendFoundLabel.Text = "Ищем устройства FireDrop в Wi-Fi сети…";
+        SendFoundLabel.Text = L10n.Get("ui.search.searching");
         SendFoundLabel.Visibility = Visibility.Visible;
         SendDevicesList.Visibility = Visibility.Collapsed;
 
@@ -1157,20 +1164,20 @@ public partial class MainWindow : Window
 
             if (_foundDevices.Count == 0)
             {
-                SendFoundLabel.Text = "Рядом ничего не найдено. Включите приём на устройстве-получателе или введите адрес вручную. Если список пуст, вероятно, брандмауэр Windows блокирует FireDrop — разрешите его ниже.";
+                SendFoundLabel.Text = L10n.Get("ui.search.notfound");
                 SendDevicesList.Visibility = Visibility.Collapsed;
                 SendFirewallCard.Visibility = Visibility.Visible;
             }
             else
             {
-                SendFoundLabel.Text = $"Найдено устройств: {_foundDevices.Count} — нажмите на нужное.";
+                SendFoundLabel.Text = L10n.S("ui.search.found.format", _foundDevices.Count);
                 SendDevicesList.Visibility = Visibility.Visible;
                 SendFirewallCard.Visibility = Visibility.Collapsed;
             }
         }
         catch (Exception ex)
         {
-            ShowSendError("Поиск устройств не удался: " + Shorten(ex.Message, 100));
+            ShowSendError(L10n.S("ui.error.discover.format", Shorten(ex.Message, 100)));
         }
         finally
         {
@@ -1246,7 +1253,7 @@ public partial class MainWindow : Window
         {
             using var dialog = new Forms.OpenFileDialog
             {
-                Title = "Файлы для отправки",
+                Title = L10n.Get("ui.dialog.sendfiles"),
                 Multiselect = true,
                 CheckFileExists = true,
             };
@@ -1265,7 +1272,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ShowSendError("Не удалось открыть выбор файлов: " + Shorten(ex.Message, 100));
+            ShowSendError(L10n.S("ui.error.pickfiles.format", Shorten(ex.Message, 100)));
         }
     }
 
@@ -1277,7 +1284,7 @@ public partial class MainWindow : Window
         {
             using var dialog = new Forms.FolderBrowserDialog
             {
-                Description = "Какую папку отправить на телефон",
+                Description = L10n.Get("ui.dialog.sendfolder"),
                 UseDescriptionForTitle = true,
                 ShowNewFolderButton = false,
                 SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
@@ -1289,7 +1296,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ShowSendError("Не удалось открыть выбор папки: " + Shorten(ex.Message, 100));
+            ShowSendError(L10n.S("ui.error.pickfolder.format", Shorten(ex.Message, 100)));
         }
     }
 
@@ -1305,7 +1312,7 @@ public partial class MainWindow : Window
         if (!File.Exists(path)) return;
 
         var name = Path.GetFileName(path);
-        if (string.IsNullOrWhiteSpace(name)) name = "файл";
+        if (string.IsNullOrWhiteSpace(name)) name = L10n.Get("ui.send.fallback.file");
 
         foreach (var existing in _sendQueue)
         {
@@ -1320,7 +1327,7 @@ public partial class MainWindow : Window
         if (!Directory.Exists(path)) return;
 
         var root = Path.GetFileName(path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-        if (string.IsNullOrWhiteSpace(root)) root = "Файлы";
+        if (string.IsNullOrWhiteSpace(root)) root = L10n.Get("ui.send.fallback.folder");
 
         var options = new EnumerationOptions
         {
@@ -1361,13 +1368,15 @@ public partial class MainWindow : Window
         if (_sendQueue.Count == 0)
         {
             SendFilesCard.Visibility = Visibility.Collapsed;
-            SendQueueText.Text = "Пока ничего не выбрано.";
+            SendQueueText.Text = L10n.Get("ui.sendqueue.empty");
         }
         else
         {
             SendFilesCard.Visibility = Visibility.Visible;
-            SendQueueText.Text =
-                $"{_sendQueue.Count} {Plural(_sendQueue.Count, "файл", "файла", "файлов")} · {FileItemViewModel.FormatBytes(total)}";
+            SendQueueText.Text = L10n.S("ui.sendqueue.format",
+                _sendQueue.Count,
+                Plural(_sendQueue.Count, L10n.Get("ui.plural.file.one"), L10n.Get("ui.plural.file.few"), L10n.Get("ui.plural.file.many")),
+                FileItemViewModel.FormatBytes(total));
         }
 
         SendClearButton.IsEnabled = _sendQueue.Count > 0 && _sendPhase == SendPhase.Idle;
@@ -1395,19 +1404,19 @@ public partial class MainWindow : Window
         var pin = SendPinBox.Text.Trim();
         if (address.Length == 0 || PhoneSender.ParseAddress(address).Host.Length == 0)
         {
-            ShowSendError("Укажите адрес получателя — IP и порт с QR-кода.");
+            ShowSendError(L10n.Get("ui.error.recipient.required"));
             return;
         }
 
         if (pin.Length != 6 || pin.Any(ch => !char.IsDigit(ch)))
         {
-            ShowSendError("Введите 6-значный код приёма с экрана получателя.");
+            ShowSendError(L10n.Get("ui.error.pin.required"));
             return;
         }
 
         if (_sendQueue.Count == 0)
         {
-            ShowSendError("Выберите файлы или папку для отправки.");
+            ShowSendError(L10n.Get("ui.error.nothing.selected"));
             return;
         }
 
@@ -1425,11 +1434,11 @@ public partial class MainWindow : Window
         SetSendInputs(false);
         SendActionButton.IsEnabled = false;
         SendActionButton.IsDefault = false;
-        SendActionButton.Content = "Отправляем…";
+        SendActionButton.Content = L10n.Get("ui.send.progressing");
         SendCancelButton.Visibility = Visibility.Visible;
         SendCancelButton.IsEnabled = true;
         SendProgressPanel.Visibility = Visibility.Visible;
-        SendProgressTitle.Text = "Подключение к получателю…";
+        SendProgressTitle.Text = L10n.Get("ui.send.connecting");
         SendProgressHint.Text = string.Empty;
         SendProgressBar.Value = 0;
 
@@ -1456,7 +1465,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             ResetSendPanel();
-            ShowSendError("Не удалось начать передачу: " + Shorten(ex.Message, 100));
+            ShowSendError(L10n.S("ui.error.startsend.format", Shorten(ex.Message, 100)));
         }
     }
 
@@ -1480,8 +1489,8 @@ public partial class MainWindow : Window
         var running = sender.Items.FirstOrDefault(item => item.State == PhoneSender.FileRunning);
         var index = sender.CompletedCount + sender.FailedCount + (running is null ? 0 : 1);
         SendProgressTitle.Text = running is not null
-            ? $"Отправляем {index} из {sender.Items.Count}: {running.Name}"
-            : $"Отправляем {index} из {sender.Items.Count}…";
+            ? L10n.S("ui.send.progress.item.format", index, sender.Items.Count, running.Name)
+            : L10n.S("ui.send.progress.format", index, sender.Items.Count);
 
         var now = Environment.TickCount64;
         if (_lastSampleMs > 0)
@@ -1490,8 +1499,10 @@ public partial class MainWindow : Window
             if (seconds > 0.05)
             {
                 var speed = Math.Max(0, sent - _lastSentBytes) / seconds;
-                SendProgressHint.Text =
-                    $"{FileItemViewModel.FormatSpeed(speed)} · {FileItemViewModel.FormatBytes(Math.Max(0, sent))} из {FileItemViewModel.FormatBytes(total)}";
+                SendProgressHint.Text = L10n.S("ui.send.hint.format",
+                    FileItemViewModel.FormatSpeed(speed),
+                    FileItemViewModel.FormatBytes(Math.Max(0, sent)),
+                    FileItemViewModel.FormatBytes(total));
                 _lastSentBytes = sent;
                 _lastSampleMs = now;
             }
@@ -1512,7 +1523,7 @@ public partial class MainWindow : Window
         SendCancelButton.IsEnabled = true;
         SendActionButton.IsEnabled = true;
         SendActionButton.IsDefault = true;
-        SendActionButton.Content = "Готово";
+        SendActionButton.Content = L10n.Get("ui.action.done");
         SetSendInputs(true);
         RefreshSendQueue();
         SendProgressPanel.Visibility = Visibility.Visible;
@@ -1522,32 +1533,37 @@ public partial class MainWindow : Window
         if (sender.Cancelled)
         {
             SendProgressBar.Value = 0;
-            SendProgressTitle.Text = "Передача отменена";
+            SendProgressTitle.Text = L10n.Get("ui.toast.receiving.cancelled");
             SendProgressHint.Text = sender.FailedCount > 0
-                ? $"{sender.FailedCount} {Plural(sender.FailedCount, "файл", "файла", "файлов")} не отправлено"
+                ? L10n.S("ui.send.failed.part.format",
+                    sender.FailedCount,
+                    Plural(sender.FailedCount, L10n.Get("ui.plural.file.one"), L10n.Get("ui.plural.file.few"), L10n.Get("ui.plural.file.many")))
                 : string.Empty;
         }
         else if (sender.FailedCount > 0)
         {
-            SendProgressTitle.Text =
-                $"Не удалось отправить {sender.FailedCount} {Plural(sender.FailedCount, "файл", "файла", "файлов")}";
-            SendProgressHint.Text = $"Отправлено {sender.CompletedCount} " +
-                                    $"{Plural(sender.CompletedCount, "файл", "файла", "файлов")}.";
+            SendProgressTitle.Text = L10n.S("ui.send.failed.batch.format",
+                sender.FailedCount,
+                Plural(sender.FailedCount, L10n.Get("ui.plural.file.one"), L10n.Get("ui.plural.file.few"), L10n.Get("ui.plural.file.many")));
+            SendProgressHint.Text = L10n.S("ui.send.completed.line.format",
+                sender.CompletedCount,
+                Plural(sender.CompletedCount, L10n.Get("ui.plural.file.one"), L10n.Get("ui.plural.file.few"), L10n.Get("ui.plural.file.many")));
             ShowSendError(Shorten(string.Join("; ", sender.FailedItems
                 .Take(3)
                 .Select(item => $"{item.Name} — {item.Error}")), 220));
-            ShowToast("Передача завершилась с ошибками", ToastKind.Error);
+            ShowToast(L10n.Get("ui.toast.send.errors"), ToastKind.Error);
         }
         else
         {
             SendProgressBar.Value = 100;
-            SendProgressTitle.Text =
-                $"Отправлено {sender.CompletedCount} {Plural(sender.CompletedCount, "файл", "файла", "файлов")}";
+            SendProgressTitle.Text = L10n.S("ui.send.completed.format",
+                sender.CompletedCount,
+                Plural(sender.CompletedCount, L10n.Get("ui.plural.file.one"), L10n.Get("ui.plural.file.few"), L10n.Get("ui.plural.file.many")));
             var seconds = Math.Max(1, (sender.FinishedAt - sender.StartedAt) / 1000.0);
             SendProgressHint.Text = sender.SentBytes > 0
                 ? $"{FileItemViewModel.FormatBytes(sender.SentBytes)} · {FileItemViewModel.FormatSpeed(sender.SentBytes / seconds)}"
                 : string.Empty;
-            ShowToast($"Отправлено на «{sender.Target}»", ToastKind.Success);
+            ShowToast(L10n.S("ui.toast.send.target.format", sender.Target), ToastKind.Success);
         }
     }
 
@@ -1559,7 +1575,7 @@ public partial class MainWindow : Window
         try { _sendCts?.Cancel(); } catch { }
 
         SendCancelButton.IsEnabled = false;
-        SendProgressTitle.Text = "Останавливаем передачу…";
+        SendProgressTitle.Text = L10n.Get("ui.send.stopping");
     }
 
     private void ResetSendPanel()
@@ -1574,14 +1590,14 @@ public partial class MainWindow : Window
         foreach (var vm in _sendQueue) vm.Reset();
 
         SendProgressPanel.Visibility = Visibility.Collapsed;
-        SendProgressTitle.Text = "Отправляем…";
+        SendProgressTitle.Text = L10n.Get("ui.send.progressing");
         SendProgressHint.Text = string.Empty;
         SendProgressBar.Value = 0;
         SendCancelButton.Visibility = Visibility.Collapsed;
         SendCancelButton.IsEnabled = true;
         SetSendInputs(true);
         SendActionButton.IsEnabled = true;
-        SendActionButton.Content = "Отправить";
+        SendActionButton.Content = L10n.Get("ui.action.send");
         SendActionButton.IsDefault = true;
         HideSendError();
     }
@@ -1687,8 +1703,8 @@ public partial class MainWindow : Window
         MaximizeIcon.Data = Geometry.Parse(maximized
             ? "M8 8h9v9H8z M5 5h9v9H5z"
             : "M4 4h16v16H4z");
-        MaximizeButton.ToolTip = maximized ? "Восстановить" : "Развернуть";
-        AutomationProperties.SetName(MaximizeButton, maximized ? "Восстановить окно" : "Развернуть окно");
+        MaximizeButton.ToolTip = maximized ? L10n.Get("ui.restore.tooltip") : L10n.Get("ui.maximize.tooltip");
+        AutomationProperties.SetName(MaximizeButton, maximized ? L10n.Get("ui.restore.automation") : L10n.Get("ui.maximize.automation"));
     }
 
     private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -1812,16 +1828,16 @@ public partial class MainWindow : Window
                 Renderer = new Forms.ToolStripProfessionalRenderer(new TrayColorTable()),
             };
 
-            var openItem = new Forms.ToolStripMenuItem("Открыть FireDrop") { ForeColor = textColor };
+            var openItem = new Forms.ToolStripMenuItem(L10n.Get("ui.tray.open")) { ForeColor = textColor };
             openItem.Click += (_, _) => Dispatcher.BeginInvoke(new Action(ShowFromTray));
 
-            var copyItem = new Forms.ToolStripMenuItem("Скопировать ссылку") { ForeColor = textColor };
+            var copyItem = new Forms.ToolStripMenuItem(L10n.Get("ui.tray.copy")) { ForeColor = textColor };
             copyItem.Click += (_, _) => Dispatcher.BeginInvoke(new Action(CopyCurrentLink));
 
-            var folderItem = new Forms.ToolStripMenuItem("Открыть папку") { ForeColor = textColor };
+            var folderItem = new Forms.ToolStripMenuItem(L10n.Get("ui.tray.folder")) { ForeColor = textColor };
             folderItem.Click += (_, _) => Dispatcher.BeginInvoke(new Action(() => OpenFolder(_uploads.SaveFolder)));
 
-            var exitItem = new Forms.ToolStripMenuItem("Выход") { ForeColor = textColor };
+            var exitItem = new Forms.ToolStripMenuItem(L10n.Get("ui.tray.exit")) { ForeColor = textColor };
             exitItem.Click += (_, _) => Dispatcher.BeginInvoke(new Action(ExitFromTray));
 
             _trayMenu.Items.Add(openItem);
@@ -1833,7 +1849,7 @@ public partial class MainWindow : Window
             _trayIcon = new Forms.NotifyIcon
             {
                 Icon = _trayDrawingIcon ?? Drawing.SystemIcons.Application,
-                Text = "FireDrop — приём файлов",
+                Text = L10n.Get("ui.window.title"),
                 Visible = true,
                 ContextMenuStrip = _trayMenu,
             };
@@ -1851,8 +1867,8 @@ public partial class MainWindow : Window
         if (_trayHintShown || _trayIcon is null) return;
         _trayHintShown = true;
 
-        _trayIcon.BalloonTipTitle = "FireDrop свёрнут";
-        _trayIcon.BalloonTipText = "Приём файлов продолжается. Нажмите на значок в трее, чтобы открыть окно.";
+        _trayIcon.BalloonTipTitle = L10n.Get("ui.tray.hint.title");
+        _trayIcon.BalloonTipText = L10n.Get("ui.tray.hint.text");
         _trayIcon.BalloonTipIcon = Forms.ToolTipIcon.Info;
         _trayIcon.ShowBalloonTip(3000);
     }
@@ -1861,7 +1877,7 @@ public partial class MainWindow : Window
     {
         if (_trayIcon is null) return;
 
-        _trayIcon.BalloonTipTitle = "Файл получен";
+        _trayIcon.BalloonTipTitle = L10n.Get("ui.tray.file.title");
         _trayIcon.BalloonTipText =
             $"{Shorten(info.FileName, 52)} · {FileItemViewModel.FormatBytes(info.Size)}";
         _trayIcon.BalloonTipIcon = Forms.ToolTipIcon.Info;

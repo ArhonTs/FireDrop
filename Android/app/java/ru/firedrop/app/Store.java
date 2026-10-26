@@ -83,7 +83,7 @@ public final class Store {
 
     /**
      * Moves a completed temp file into the public Downloads folder.
-     * Returns the human readable location, for example {@code Download/FireDrop/Фото/1.jpg}.
+     * Returns the human readable location, for example {@code Download/FireDrop/Pictures/1.jpg}.
      */
     public String publish(File temp, String relativePath, long lastModified) throws IOException {
         String relative = safeRelative(relativePath);
@@ -109,12 +109,12 @@ public final class Store {
         }
 
         Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
-        if (uri == null) throw new IOException("Не удалось создать файл в папке «Загрузки»");
+        if (uri == null) throw new IOException(L10n.s("store.save.failed"));
 
         try {
             try (InputStream input = new FileInputStream(temp);
                  OutputStream output = resolver.openOutputStream(uri)) {
-                if (output == null) throw new IOException("Нет доступа к папке «Загрузки»");
+                if (output == null) throw new IOException(L10n.s("store.downloads.unavailable"));
                 copy(input, output);
             }
 
@@ -138,7 +138,7 @@ public final class Store {
     private String publishLegacy(File temp, String dir, String leaf, long lastModified) throws IOException {
         File folder = new File(legacyRoot(), dir);
         if (!folder.exists() && !folder.mkdirs()) {
-            throw new IOException("Не удалось создать папку " + folder.getAbsolutePath());
+            throw new IOException(String.format(L10n.s("store.folder.failed"), folder.getAbsolutePath()));
         }
 
         File target = new File(folder, leaf);

@@ -115,7 +115,8 @@ public final class ReceiverServer {
 
     public ReceiverServer(Store store, String deviceName, Listener listener) {
         this.store = store;
-        this.deviceName = deviceName == null || deviceName.isEmpty() ? "Телефон" : deviceName;
+        this.deviceName = deviceName == null || deviceName.isEmpty()
+                ? L10n.s("rserver.device.default") : deviceName;
         this.listener = listener;
         this.token = randomHex(16);
         this.pin = String.format(Locale.US, "%06d", random.nextInt(1_000_000));
@@ -170,7 +171,8 @@ public final class ReceiverServer {
                 last = error;
             }
         }
-        if (socket == null) throw last == null ? new IOException("Не удалось открыть порт") : last;
+        if (socket == null) throw last == null
+                ? new IOException(L10n.s("rserver.port_failed")) : last;
 
         final ServerSocket bound = socket;
         port = bound.getLocalPort();
@@ -247,7 +249,7 @@ public final class ReceiverServer {
 
             String[] parts = requestLine.split(" ");
             if (parts.length < 3) {
-                respond(out, 400, error("Некорректный запрос."));
+                respond(out, 400, error(L10n.s("rserver.error.bad_request")));
                 return;
             }
 
@@ -304,7 +306,7 @@ public final class ReceiverServer {
                 respond(out, error.status, error(error.getMessage()));
             } catch (Exception error) {
                 Log.w(TAG, "request failed " + method + " " + path, error);
-                respond(out, 500, error("Внутренняя ошибка приёма файла."));
+                respond(out, 500, error(L10n.s("rserver.error.internal")));
             }
         } catch (SocketException | EOFException ignored) {
         } catch (Exception error) {
@@ -342,7 +344,7 @@ public final class ReceiverServer {
         }
 
         if (!isAuthorized(params, headers)) {
-            throw new UploadError(401, "Требуется подключение к FireDrop.");
+            throw new UploadError(401, L10n.s("rserver.error.unauthorized"));
         }
 
         if (path.equals("/api/folders") && method.equals("POST")) {
@@ -380,7 +382,7 @@ public final class ReceiverServer {
             return;
         }
 
-        throw new UploadError(404, "Не найдено.");
+        throw new UploadError(404, L10n.s("rserver.error.not_found"));
     }
 
     private void handleJoin(Map<String, String> headers, long contentLength,
@@ -391,7 +393,7 @@ public final class ReceiverServer {
         synchronized (joinFailures) {
             long[] state = joinFailures.get(key);
             if (state != null && state[0] >= 8 && System.currentTimeMillis() - state[1] < 120_000) {
-                throw new UploadError(429, "Слишком много попыток. Подождите пару минут.");
+                throw new UploadError(429, L10n.s("rserver.error.rate_limited"));
             }
         }
 
@@ -409,7 +411,7 @@ public final class ReceiverServer {
                     state[1] = System.currentTimeMillis();
                 }
             }
-            throw new UploadError(401, "Неверный код. Проверьте цифры на экране телефона.");
+            throw new UploadError(401, L10n.s("rserver.error.bad_pin"));
         }
 
         synchronized (joinFailures) {
@@ -439,9 +441,9 @@ public final class ReceiverServer {
         String relativePath = json.optString("relativePath", "");
         if (relativePath == null || "null".equals(relativePath)) relativePath = "";
 
-        if (size < 0) throw new UploadError(400, "Некорректный размер файла.");
+        if (size < 0) throw new UploadError(400, L10n.s("rserver.error.bad_size"));
         if (store.freeBytes() < size + MIN_FREE_SPACE) {
-            throw new UploadError(507, "На телефоне недостаточно места.");
+            throw new UploadError(507, L10n.s("rserver.error.no_space"));
         }
 
         // relativePath is the parent folder (the same contract as the PC server).
@@ -477,13 +479,13 @@ public final class ReceiverServer {
     private void handleChunk(String id, long offset, long contentLength,
                              InputStream in, OutputStream out) throws Exception {
         Session session = sessions.get(id);
-        if (session == null) throw new UploadError(404, "Передача не найдена.");
-        if (session.aborted) throw new UploadError(410, "Передача отменена.");
-        if (session.completed) throw new UploadError(409, "Файл уже принят.");
+        if (session == null) throw new UploadError(404, L10n.s("rserver.error.session_missing"));
+        if (session.aborted) throw new UploadError(410, L10n.s("rserver.error.session_aborted"));
+        if (session.completed) throw new UploadError(409, L10n.s("rserver.error.already_received"));
 
         long expected = expectedChunkLength(session.size, offset);
-        if (expected < 0) throw new UploadError(400, "Некорректный размер части файла.");
-        if (contentLength != expected) throw new UploadError(400, "Некорректный размер части файла.");
+        if (expected < 0) throw new UploadError(400, L10n.s("rserver.error.bad_chunk_size"));
+        if (contentLength != expected) throw new UploadError(400, L10n.s("rserver.error.bad_chunk_size"));
 
         int index = (int) (offset / CHUNK_SIZE);
         synchronized (session) {
@@ -513,7 +515,7 @@ public final class ReceiverServer {
                 written += read;
             }
         } catch (EOFException early) {
-            throw new UploadError(400, "Часть файла пришла не полностью.");
+            throw new UploadError(400, L10n.s("rserver.error.chunk_incomplete"));
         }
 
         // Count the whole chunk only after it is fully on disk. A connection that
@@ -542,7 +544,7 @@ public final class ReceiverServer {
         }
 
         Session session = sessions.get(id);
-        if (session == null) throw new UploadError(404, "Передача не найдена.");
+        if (session == null) throw new UploadError(404, L10n.s("rserver.error.session_missing"));
 
         synchronized (session) {
             if (session.completed) {
@@ -553,16 +555,15 @@ public final class ReceiverServer {
                         return;
                     }
                 }
-                throw new UploadError(409, "Файл уже принят.");
+                throw new UploadError(409, L10n.s("rserver.error.already_received"));
             }
-            if (session.aborted) throw new UploadError(410, "Передача отменена.");
+            if (session.aborted) throw new UploadError(410, L10n.s("rserver.error.session_aborted"));
 
             int count = session.received.cardinality();
             long bytes = session.receivedBytes.get();
             if (count != session.expectedChunks || bytes != session.size) {
-                throw new UploadError(409,
-                        "Передача ещё не завершена (не хватает частей: "
-                                + Math.max(0, session.expectedChunks - count) + ").");
+                throw new UploadError(409, String.format(L10n.s("rserver.error.incomplete"),
+                        Math.max(0, session.expectedChunks - count)));
             }
 
             try {
@@ -582,7 +583,7 @@ public final class ReceiverServer {
                 sessions.remove(id);
                 //noinspection ResultOfMethodCallIgnored
                 session.temp.delete();
-                throw new UploadError(500, "Не удалось сохранить файл в папке «Загрузки».");
+                throw new UploadError(500, L10n.s("rserver.error.save_failed"));
             }
             session.publishing = false;
 

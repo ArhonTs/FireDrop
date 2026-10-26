@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#070b14">
   <meta name="color-scheme" content="dark">
   <meta name="description" content="FireDrop — быстрая передача файлов с телефона на компьютер по локальному Wi-Fi.">
-  <title>FireDrop — файлы на компьютер</title>
+  <title data-i18n="page.title">FireDrop — файлы на компьютер</title>
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/favicon-32.png" type="image/png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -25,7 +25,7 @@
 
   <div id="offlineBanner" class="offline-banner" role="status" hidden>
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5m0 3.5v.5M4.9 4.9l14.2 14.2"/><circle cx="12" cy="12" r="9"/></svg>
-    Нет связи с компьютером. Проверьте Wi-Fi.
+    <span data-i18n="page.offline">Нет связи с компьютером. Проверьте Wi-Fi.</span>
   </div>
 
   <header class="topbar">
@@ -35,7 +35,7 @@
       </span>
       <span class="brand-text">
         <strong>FireDrop</strong>
-        <small id="serverName">Подключение…</small>
+        <small id="serverName" data-i18n="page.connecting">Подключение…</small>
       </span>
     </a>
     <span class="wifi-pill">
@@ -47,23 +47,23 @@
 
   <main class="shell">
     <section class="hero">
-      <div class="eyebrow"><span class="live-dot"></span> Прямая передача по локальной сети</div>
-      <h1>Файлы с телефона<br><span>сразу на компьютер</span></h1>
-      <p class="hero-sub">Без облака, кабелей и сжатия. Скорость ограничена только вашим Wi-Fi.</p>
+      <div class="eyebrow"><span class="live-dot"></span> <span data-i18n="page.eyebrow">Прямая передача по локальной сети</span></div>
+      <h1 data-i18n-html="page.heroTitle">Файлы с телефона<br><span>сразу на компьютер</span></h1>
+      <p class="hero-sub" data-i18n="page.heroSub">Без облака, кабелей и сжатия. Скорость ограничена только вашим Wi-Fi.</p>
     </section>
 
-    <section class="drop-card" id="dropCard" tabindex="0" role="button" aria-label="Выбрать файлы для отправки">
+    <section class="drop-card" id="dropCard" tabindex="0" role="button" aria-label="Выбрать файлы для отправки" data-i18n-aria="page.dropCardAria">
       <span class="drop-ring" aria-hidden="true"></span>
       <div class="drop-icon" aria-hidden="true">
         <svg viewBox="0 0 32 32"><path d="M16 6v13m0 0-5-5m5 5 5-5M8 25h16"/></svg>
       </div>
-      <h2>Выберите файлы</h2>
-      <p>Фото, видео, документы — любые размеры</p>
+      <h2 data-i18n="page.chooseTitle">Выберите файлы</h2>
+      <p data-i18n="page.anySize">Фото, видео, документы — любые размеры</p>
       <button class="primary-btn" id="chooseBtn" type="button">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v10m0 0-4-4m4 4 4-4M5 19h14"/></svg>
-        Выбрать файлы
+        <span data-i18n="page.chooseFiles">Выбрать файлы</span>
       </button>
-      <span class="drop-hint">или перетащите их сюда</span>
+      <span class="drop-hint" data-i18n="page.dropHint">или перетащите их сюда</span>
       <input id="fileInput" type="file" multiple hidden>
       <input id="folderInput" type="file" multiple webkitdirectory directory hidden>
       <input id="photoInput" type="file" accept="image/*,video/*" multiple hidden>
@@ -75,48 +75,48 @@
         <span class="quick-icon quick-photo" aria-hidden="true">
           <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m4 17 5-5 4 4 2.5-2.5L20 18"/></svg>
         </span>
-        <span>Фото и видео</span>
+        <span data-i18n="page.quickPhoto">Фото и видео</span>
       </button>
       <button class="quick-btn" type="button" data-input="fileInput">
         <span class="quick-icon quick-file" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z"/><path d="M13 3v6h6"/></svg>
         </span>
-        <span>Любые файлы</span>
+        <span data-i18n="page.quickFiles">Любые файлы</span>
       </button>
       <button class="quick-btn" type="button" data-input="folderInput">
         <span class="quick-icon quick-file" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
         </span>
-        <span>Папка</span>
+        <span data-i18n="page.quickFolder">Папка</span>
       </button>
       <button class="quick-btn" type="button" data-input="cameraInput">
         <span class="quick-icon quick-camera" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.5"/></svg>
         </span>
-        <span>Камера</span>
+        <span data-i18n="page.quickCamera">Камера</span>
       </button>
     </div>
 
     <section class="transfer-section" id="transferSection" hidden>
       <div class="section-head">
-        <h2>Передача <span class="count-pill" id="fileCount">0</span></h2>
-        <button class="text-btn" id="clearBtn" type="button">Очистить</button>
+        <h2><span data-i18n="page.transfer">Передача</span> <span class="count-pill" id="fileCount">0</span></h2>
+        <button class="text-btn" id="clearBtn" type="button" data-i18n="page.clear">Очистить</button>
       </div>
 
       <div class="overall" id="overallCard">
         <div class="overall-head">
           <div class="overall-title">
-            <span id="overallLabel">Отправка…</span>
-            <small id="overallMeta">0 из 0</small>
+            <span id="overallLabel" data-i18n="page.sending">Отправка…</span>
+            <small id="overallMeta" data-i18n="page.metaZero">0 из 0</small>
           </div>
           <div class="overall-speed">
             <strong id="overallSpeed">0</strong>
-            <span id="overallUnit">МБ/с</span>
+            <span id="overallUnit" data-i18n="page.unitMbps">МБ/с</span>
           </div>
         </div>
         <div class="progress big"><span id="overallBar"></span></div>
         <div class="overall-foot">
-          <span id="overallBytes">0 Б / 0 Б</span>
+          <span id="overallBytes" data-i18n="page.bytesZero">0 Б / 0 Б</span>
           <span id="overallEta"></span>
         </div>
       </div>
@@ -129,19 +129,19 @@
         <span class="tips-bolt" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="m13 2-8 12h6l-1 8 9-13h-6z"/></svg>
         </span>
-        <span>Советы для максимальной скорости</span>
+        <span data-i18n="page.tipsTitle">Советы для максимальной скорости</span>
       </div>
       <ul>
-        <li>Держите телефон рядом с роутером и выбирайте сеть 5 ГГц.</li>
-        <li>Не блокируйте экран — браузер может приостановить передачу.</li>
-        <li>Отключите VPN на телефоне: он может направить трафик через интернет.</li>
+        <li data-i18n="page.tip1">Держите телефон рядом с роутером и выбирайте сеть 5 ГГц.</li>
+        <li data-i18n="page.tip2">Не блокируйте экран — браузер может приостановить передачу.</li>
+        <li data-i18n="page.tip3">Отключите VPN на телефоне: он может направить трафик через интернет.</li>
       </ul>
     </section>
   </main>
 
   <footer class="footer">
     <span class="footer-brand"><span class="footer-dot"></span> FireDrop</span>
-    <span>Только ваша локальная сеть</span>
+    <span data-i18n="page.footerLocal">Только ваша локальная сеть</span>
   </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>

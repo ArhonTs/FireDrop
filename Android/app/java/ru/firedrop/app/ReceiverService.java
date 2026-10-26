@@ -183,14 +183,15 @@ public final class ReceiverService extends Service {
         String text;
         if (current == null) {
             title = "FireDrop";
-            text = "Приём файлов";
+            text = L10n.s("svc.receiving");
         } else {
             int count = current.completedCount();
-            title = "Приём включён · код " + current.pin();
+            title = String.format(L10n.s("svc.receiving.code"), current.pin());
             if (count > 0) {
-                text = "Получено файлов: " + count + " · " + Ui.formatBytes(current.completedBytes());
+                text = String.format(L10n.s("svc.received.count"), count,
+                        Ui.formatBytes(current.completedBytes()));
             } else {
-                text = "Откройте FireDrop на другом устройстве";
+                text = L10n.s("svc.waiting");
             }
         }
         lastCount = current == null ? -1 : current.completedCount();
@@ -211,7 +212,7 @@ public final class ReceiverService extends Service {
                 .setShowWhen(false)
                 .addAction(new Notification.Action.Builder(
                         android.graphics.drawable.Icon.createWithResource(this, R.drawable.ic_notification),
-                        "Остановить", stopIntent).build());
+                        L10n.s("svc.stop"), stopIntent).build());
 
         return builder.build();
     }

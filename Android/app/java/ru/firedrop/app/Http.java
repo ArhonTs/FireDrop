@@ -84,7 +84,7 @@ public final class Http {
             String text = readBody(status >= 400 ? connection.getErrorStream() : connection.getInputStream());
 
             if (status >= 400) {
-                String message = "Ошибка сервера (" + status + ")";
+                String message = String.format(L10n.s("http.server.error"), status);
                 try {
                     JSONObject parsed = new JSONObject(text);
                     String error = parsed.optString("error", "");
@@ -126,7 +126,7 @@ public final class Http {
             captureCookie(connection);
             String text = readBody(status >= 400 ? connection.getErrorStream() : connection.getInputStream());
             if (status >= 400) {
-                String message = "Ошибка передачи (" + status + ")";
+                String message = String.format(L10n.s("http.transfer.error"), status);
                 try {
                     JSONObject parsed = new JSONObject(text);
                     String error = parsed.optString("error", "");

@@ -1,18 +1,220 @@
 (() => {
   'use strict';
 
+  const curLang = (navigator.languages || [navigator.language]).some((l) =>
+    l && l.toLowerCase().startsWith('ru')) ? 'ru' : 'en';
+
+  const I18N = {
+    ru: {
+      // Statuses
+      'status.pending': 'В очереди',
+      'status.init': 'Подготовка',
+      'status.uploading': 'Передача',
+      'status.finishing': 'Сохранение',
+      'status.done': 'Готово',
+      'status.error': 'Ошибка',
+      'status.cancelled': 'Отменено',
+      // Toasts / snippets
+      'msg.reconnected': 'Соединение восстановлено',
+      'msg.noConnection': 'Нет связи с компьютером',
+      'msg.cancelled': 'Передача отменена',
+      'msg.listCleared': 'Список очищен',
+      'msg.doneShort': 'готово',
+      'msg.allSaved': 'Готово! Файлы сохранены на компьютере.',
+      'msg.file': 'файл',
+      'device.default': 'Компьютер',
+      // Row action labels
+      'aria.cancel': 'Отменить передачу',
+      'aria.retry': 'Повторить передачу',
+      'aria.remove': 'Убрать из списка',
+      // Errors
+      'err.noId': 'Компьютер не выдал идентификатор передачи.',
+      'err.cancelled': 'Передача отменена',
+      'err.chunkFailed': 'Не удалось отправить часть файла.',
+      'err.connectionLost': 'Связь с компьютером прервалась.',
+      'err.timeout': 'Компьютер слишком долго не отвечает.',
+      'err.readFailed': 'Не удалось прочитать файл.',
+      'err.notConfirmed': 'Компьютер не подтвердил сохранение файла.',
+      'err.sendFailed': 'Не удалось отправить файл',
+      'err.requestFailed': 'Не удалось выполнить запрос.',
+      'err.noConnectionWifi': 'Связь с компьютером прервалась. Проверьте Wi-Fi.',
+      'err.needJoin': 'Требуется подключение к FireDrop.',
+      // Templates ({0}, {1})
+      'tpl.serverReady': '{0} · готов принять',
+      'tpl.errServer': 'Ошибка сервера ({0})',
+      'tpl.errComputer': 'Ошибка компьютера ({0})',
+      'tpl.sendNamed': 'Не удалось отправить «{0}»',
+      'tpl.meta': '{0} из {1} файлов',
+      'tpl.etaDone': 'за {0}',
+      'tpl.etaLeft': 'осталось {0}',
+      'tpl.durSeconds': '{0} сек',
+      'tpl.durMinutes': '{0} мин',
+      'tpl.durHours': '{0} ч {1} мин',
+      'dur.zero': '0 сек',
+      'dur.moment': 'меньше секунды',
+      // Units
+      'bytes.units': ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'],
+      'unit.speedMB': 'МБ/с',
+      'unit.speedGB': 'ГБ/с',
+      'unit.speedKB': 'КБ/с',
+      // Overview labels
+      'lbl.sendingFiles': 'Отправка файлов',
+      'lbl.allDone': 'Все файлы на компьютере',
+      'lbl.sending': 'Отправка на компьютер',
+      'lbl.preparing': 'Подготовка к отправке',
+      'lbl.hasErrors': 'Есть ошибки',
+      // index.html static labels
+      'page.title': 'FireDrop — файлы на компьютер',
+      'page.offline': 'Нет связи с компьютером. Проверьте Wi-Fi.',
+      'page.connecting': 'Подключение…',
+      'page.eyebrow': 'Прямая передача по локальной сети',
+      'page.heroTitle': 'Файлы с телефона<br><span>сразу на компьютер</span>',
+      'page.heroSub': 'Без облака, кабелей и сжатия. Скорость ограничена только вашим Wi-Fi.',
+      'page.dropCardAria': 'Выбрать файлы для отправки',
+      'page.chooseTitle': 'Выберите файлы',
+      'page.anySize': 'Фото, видео, документы — любые размеры',
+      'page.chooseFiles': 'Выбрать файлы',
+      'page.dropHint': 'или перетащите их сюда',
+      'page.quickPhoto': 'Фото и видео',
+      'page.quickFiles': 'Любые файлы',
+      'page.quickFolder': 'Папка',
+      'page.quickCamera': 'Камера',
+      'page.transfer': 'Передача',
+      'page.clear': 'Очистить',
+      'page.sending': 'Отправка…',
+      'page.metaZero': '0 из 0',
+      'page.unitMbps': 'МБ/с',
+      'page.bytesZero': '0 Б / 0 Б',
+      'page.tipsTitle': 'Советы для максимальной скорости',
+      'page.tip1': 'Держите телефон рядом с роутером и выбирайте сеть 5 ГГц.',
+      'page.tip2': 'Не блокируйте экран — браузер может приостановить передачу.',
+      'page.tip3': 'Отключите VPN на телефоне: он может направить трафик через интернет.',
+      'page.footerLocal': 'Только ваша локальная сеть',
+    },
+    en: {
+      // Statuses
+      'status.pending': 'Queued',
+      'status.init': 'Preparing',
+      'status.uploading': 'Uploading',
+      'status.finishing': 'Saving',
+      'status.done': 'Done',
+      'status.error': 'Error',
+      'status.cancelled': 'Cancelled',
+      // Toasts / snippets
+      'msg.reconnected': 'Connection restored',
+      'msg.noConnection': 'No connection to the computer',
+      'msg.cancelled': 'Transfer cancelled',
+      'msg.listCleared': 'List cleared',
+      'msg.doneShort': 'done',
+      'msg.allSaved': 'Done! Files are saved on the computer.',
+      'msg.file': 'file',
+      'device.default': 'Computer',
+      // Row action labels
+      'aria.cancel': 'Cancel transfer',
+      'aria.retry': 'Retry transfer',
+      'aria.remove': 'Remove from list',
+      // Errors
+      'err.noId': 'The computer did not issue a transfer id.',
+      'err.cancelled': 'Transfer cancelled',
+      'err.chunkFailed': 'Failed to send a part of the file.',
+      'err.connectionLost': 'Connection to the computer was lost.',
+      'err.timeout': 'The computer is taking too long to respond.',
+      'err.readFailed': 'Failed to read the file.',
+      'err.notConfirmed': 'The computer did not confirm saving the file.',
+      'err.sendFailed': 'Failed to send the file',
+      'err.requestFailed': 'The request failed.',
+      'err.noConnectionWifi': 'Connection to the computer was lost. Check Wi-Fi.',
+      'err.needJoin': 'FireDrop connection required.',
+      // Templates ({0}, {1})
+      'tpl.serverReady': '{0} · ready to receive',
+      'tpl.errServer': 'Server error ({0})',
+      'tpl.errComputer': 'Computer error ({0})',
+      'tpl.sendNamed': 'Could not send "{0}"',
+      'tpl.meta': '{0} of {1} files',
+      'tpl.etaDone': 'in {0}',
+      'tpl.etaLeft': '{0} left',
+      'tpl.durSeconds': '{0} s',
+      'tpl.durMinutes': '{0} min',
+      'tpl.durHours': '{0} h {1} min',
+      'dur.zero': '0 s',
+      'dur.moment': 'less than a second',
+      // Units
+      'bytes.units': ['B', 'KB', 'MB', 'GB', 'TB'],
+      'unit.speedMB': 'MB/s',
+      'unit.speedGB': 'GB/s',
+      'unit.speedKB': 'KB/s',
+      // Overview labels
+      'lbl.sendingFiles': 'Sending files',
+      'lbl.allDone': 'All files are on the computer',
+      'lbl.sending': 'Sending to the computer',
+      'lbl.preparing': 'Preparing to send',
+      'lbl.hasErrors': 'Some files failed',
+      // index.html static labels
+      'page.title': 'FireDrop — files to the computer',
+      'page.offline': 'No connection to the computer. Check Wi-Fi.',
+      'page.connecting': 'Connecting…',
+      'page.eyebrow': 'Direct transfer over the local network',
+      'page.heroTitle': 'Files from your phone<br><span>straight to the computer</span>',
+      'page.heroSub': 'No cloud, no cables, no compression. Speed is limited only by your Wi-Fi.',
+      'page.dropCardAria': 'Choose files to send',
+      'page.chooseTitle': 'Choose files',
+      'page.anySize': 'Photos, videos, documents — any size',
+      'page.chooseFiles': 'Choose files',
+      'page.dropHint': 'or drop them here',
+      'page.quickPhoto': 'Photos & videos',
+      'page.quickFiles': 'Any files',
+      'page.quickFolder': 'Folder',
+      'page.quickCamera': 'Camera',
+      'page.transfer': 'Transfer',
+      'page.clear': 'Clear',
+      'page.sending': 'Sending…',
+      'page.metaZero': '0 of 0',
+      'page.unitMbps': 'MB/s',
+      'page.bytesZero': '0 B / 0 B',
+      'page.tipsTitle': 'Tips for maximum speed',
+      'page.tip1': 'Keep the phone close to the router and use a 5 GHz network.',
+      'page.tip2': 'Do not lock the screen — the browser may pause the transfer.',
+      'page.tip3': 'Disable VPN on the phone: it may route traffic through the internet.',
+      'page.footerLocal': 'Your local network only',
+    },
+  };
+
+  const t = (key) => (I18N[curLang] && I18N[curLang][key]) || I18N.en[key] || key;
+  const REPL = (s, args) => String(s).replace(/\{(\d+)\}/g, (m, i) => (args[i] ?? m));
+  const DECIMAL_SEP = curLang === 'ru' ? ',' : '.';
+
+  function applyI18n(root = document) {
+    root.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-i18n');
+      const value = t(key);
+      if (el.textContent !== value) el.textContent = value;
+    });
+    root.querySelectorAll('[data-i18n-html]').forEach((el) => {
+      el.innerHTML = t(el.getAttribute('data-i18n-html'));
+    });
+    root.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+      el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
+    });
+    root.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+      el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+    });
+    root.querySelectorAll('[data-i18n-title]').forEach((el) => {
+      el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
+    });
+  }
+
   const DEFAULT_CHUNK = 8 * 1024 * 1024;
   const DEFAULT_PARALLEL = 6;
   const MAX_CHUNK_RETRIES = 4;
 
   const STATUS_LABELS = {
-    pending: 'В очереди',
-    init: 'Подготовка',
-    uploading: 'Передача',
-    finishing: 'Сохранение',
-    done: 'Готово',
-    error: 'Ошибка',
-    cancelled: 'Отменено',
+    pending: 'status.pending',
+    init: 'status.init',
+    uploading: 'status.uploading',
+    finishing: 'status.finishing',
+    done: 'status.done',
+    error: 'status.error',
+    cancelled: 'status.cancelled',
   };
 
   const ICONS = {
@@ -70,6 +272,8 @@
   init();
 
   function init() {
+    document.documentElement.lang = curLang;
+    applyI18n();
     bindEvents();
     updateOfflineState();
     loadInfo();
@@ -148,7 +352,7 @@
 
     window.addEventListener('online', () => {
       updateOfflineState();
-      showToast('Соединение восстановлено', 'success');
+      showToast(t('msg.reconnected'), 'success');
       loadInfo();
     });
     window.addEventListener('offline', updateOfflineState);
@@ -162,19 +366,19 @@
     try {
       const info = await apiJson('/api/info');
       state.config = {
-        deviceName: info.deviceName || 'Компьютер',
+        deviceName: info.deviceName || t('device.default'),
         chunkSize: Number(info.chunkSize) || DEFAULT_CHUNK,
         parallelChunks: Number(info.parallelChunks) || DEFAULT_PARALLEL,
       };
       state.infoRetry = 0;
-      setText(els.serverName, `${state.config.deviceName} · готов принять`);
+      setText(els.serverName, REPL(t('tpl.serverReady'), [state.config.deviceName]));
       document.title = `FireDrop — ${state.config.deviceName}`;
     } catch (error) {
       if (error?.status === 401) return;
       if (attempt < 5) {
         setTimeout(() => loadInfo(attempt + 1), 1600);
       } else {
-        setText(els.serverName, 'Нет связи с компьютером');
+        setText(els.serverName, t('msg.noConnection'));
       }
     }
   }
@@ -254,11 +458,11 @@
         </div>
         <div class="file-progress"><span></span></div>
         <div class="file-meta">
-          <span class="file-status">В очереди</span>
+          <span class="file-status">${t('status.pending')}</span>
           <span class="file-speed"></span>
         </div>
       </div>
-      <button class="file-action" type="button" aria-label="Отменить передачу"></button>
+      <button class="file-action" type="button" aria-label="${t('aria.cancel')}"></button>
     `;
 
     const refs = {
@@ -341,7 +545,7 @@
         }),
       }), 3);
 
-      if (!init || !init.id) throw new TransferError('Компьютер не выдал идентификатор передачи.');
+      if (!init || !init.id) throw new TransferError(t('err.noId'));
 
       if (transfer.status === 'cancelled' || !state.transfers.includes(transfer)) {
         deleteUpload(init.id);
@@ -422,7 +626,7 @@
 
     for (let attempt = 0; attempt < MAX_CHUNK_RETRIES; attempt += 1) {
       if (transfer.status !== 'uploading') {
-        throw new TransferError('Передача отменена', 0, true);
+        throw new TransferError(t('err.cancelled'), 0, true);
       }
 
       try {
@@ -452,7 +656,7 @@
       }
     }
 
-    throw lastError || new TransferError('Не удалось отправить часть файла.');
+    throw lastError || new TransferError(t('err.chunkFailed'));
   }
 
   function putChunk(transfer, index, start, length) {
@@ -503,7 +707,7 @@
           return;
         }
 
-        let message = `Ошибка сервера (${xhr.status})`;
+        let message = REPL(t('tpl.errServer'), [xhr.status]);
         try {
           const body = JSON.parse(xhr.responseText);
           if (body?.error) message = body.error;
@@ -515,15 +719,15 @@
         fail(new TransferError(message, xhr.status));
       };
 
-      xhr.onerror = () => fail(new TransferError('Связь с компьютером прервалась.'));
-      xhr.ontimeout = () => fail(new TransferError('Компьютер слишком долго не отвечает.'));
-      xhr.onabort = () => fail(new TransferError('Передача отменена', 0, true));
+      xhr.onerror = () => fail(new TransferError(t('err.connectionLost')));
+      xhr.ontimeout = () => fail(new TransferError(t('err.timeout')));
+      xhr.onabort = () => fail(new TransferError(t('err.cancelled'), 0, true));
 
       transfer.xhrs.add(xhr);
       try {
         xhr.send(transfer.file.slice(start, start + length));
       } catch (error) {
-        fail(new TransferError(error?.message || 'Не удалось прочитать файл.'));
+        fail(new TransferError(error?.message || t('err.readFailed')));
       }
     });
   }
@@ -540,7 +744,7 @@
         { method: 'POST' },
       ), 3);
 
-      if (!result || !result.ok) throw new TransferError('Компьютер не подтвердил сохранение файла.');
+      if (!result || !result.ok) throw new TransferError(t('err.notConfirmed'));
 
       transfer.doneBytes = transfer.size;
       transfer.loadedBytes = transfer.size;
@@ -584,7 +788,7 @@
     if (error?.status === 401) return;
 
     transfer.status = 'error';
-    transfer.error = error?.message || 'Не удалось отправить файл';
+    transfer.error = error?.message || t('err.sendFailed');
     transfer.speed = 0;
     transfer.chunkError = null;
 
@@ -604,7 +808,7 @@
     const now = Date.now();
     if (now - state.lastFailureToast > 3500) {
       state.lastFailureToast = now;
-      showToast(`Не удалось отправить «${shortName(transfer.name)}»`, 'error', 4200);
+      showToast(REPL(t('tpl.sendNamed'), [shortName(transfer.name)]), 'error', 4200);
     }
   }
 
@@ -665,7 +869,7 @@
 
     if (transfer.serverId) deleteUpload(transfer.serverId);
     removeTransfer(transfer);
-    showToast('Передача отменена');
+    showToast(t('msg.cancelled'));
     releaseWakeLockIfIdle();
   }
 
@@ -690,7 +894,7 @@
       if (transfer.status === 'error' && transfer.serverId) deleteUpload(transfer.serverId);
       removeTransfer(transfer);
     }
-    if (removable.length) showToast('Список очищен');
+    if (removable.length) showToast(t('msg.listCleared'));
   }
 
   function tick() {
@@ -735,7 +939,7 @@
     const parts = formatSpeedParts(speed);
 
     setText(els.fileCount, String(totalFiles));
-    setText(els.overallMeta, `${done.length} из ${totalFiles} файлов`);
+    setText(els.overallMeta, REPL(t('tpl.meta'), [done.length, totalFiles]));
     setText(els.overallSpeed, parts.value);
     setText(els.overallUnit, parts.unit);
     setText(
@@ -743,11 +947,11 @@
       `${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}`,
     );
 
-    let label = 'Отправка файлов';
-    if (allDone) label = 'Все файлы на компьютере';
-    else if (active.length) label = 'Отправка на компьютер';
-    else if (pending.length) label = 'Подготовка к отправке';
-    else if (errors.length) label = 'Есть ошибки';
+    let label = t('lbl.sendingFiles');
+    if (allDone) label = t('lbl.allDone');
+    else if (active.length) label = t('lbl.sending');
+    else if (pending.length) label = t('lbl.preparing');
+    else if (errors.length) label = t('lbl.hasErrors');
     setText(els.overallLabel, label);
 
     const progress = totalBytes > 0
@@ -760,9 +964,9 @@
         (max, transfer) => Math.max(max, transfer.completedAt - transfer.startedAt),
         0,
       ) / 1000;
-      setText(els.overallEta, seconds > 0 ? `за ${formatDuration(seconds)}` : 'готово');
+      setText(els.overallEta, seconds > 0 ? REPL(t('tpl.etaDone'), [formatDuration(seconds)]) : t('msg.doneShort'));
     } else if (active.length && speed > 0 && totalBytes > loadedBytes) {
-      setText(els.overallEta, `осталось ${formatDuration((totalBytes - loadedBytes) / speed)}`);
+      setText(els.overallEta, REPL(t('tpl.etaLeft'), [formatDuration((totalBytes - loadedBytes) / speed)]));
     } else {
       setText(els.overallEta, '');
     }
@@ -777,7 +981,7 @@
     if (allDone && !state.wasAllDone) {
       state.wasAllDone = true;
       if (navigator.vibrate) navigator.vibrate([22, 45, 30]);
-      showToast('Готово! Файлы сохранены на компьютере.', 'success', 4200);
+      showToast(t('msg.allSaved'), 'success', 4200);
       releaseWakeLockIfIdle();
     } else if (!allDone) {
       state.wasAllDone = false;
@@ -804,7 +1008,7 @@
       transfer.row.dataset.status = transfer.status;
     }
 
-    let statusText = STATUS_LABELS[transfer.status] || transfer.status;
+    let statusText = t(STATUS_LABELS[transfer.status]) || transfer.status;
     if (transfer.status === 'error' && transfer.error) statusText = transfer.error;
     setText(transfer.refs.status, statusText);
 
@@ -812,20 +1016,20 @@
     if (isActive(transfer)) {
       speedText = transfer.speed > 0 ? formatSpeed(transfer.speed) : '';
     } else if (transfer.status === 'done') {
-      speedText = transfer.avgSpeed > 0 ? formatSpeed(transfer.avgSpeed) : 'готово';
+      speedText = transfer.avgSpeed > 0 ? formatSpeed(transfer.avgSpeed) : t('msg.doneShort');
     } else if (transfer.status === 'pending') {
       speedText = formatBytes(transfer.size);
     }
     setText(transfer.refs.speed, speedText);
 
     let icon = ICONS.stop;
-    let label = 'Отменить передачу';
+    let label = t('aria.cancel');
     if (transfer.status === 'error') {
       icon = ICONS.retry;
-      label = 'Повторить передачу';
+      label = t('aria.retry');
     } else if (transfer.status === 'done') {
       icon = ICONS.remove;
-      label = 'Убрать из списка';
+      label = t('aria.remove');
     }
 
     if (transfer.actionIcon !== icon) {
@@ -899,7 +1103,7 @@
 
   function updateOfflineState() {
     els.offlineBanner.hidden = navigator.onLine;
-    if (!navigator.onLine) setText(els.serverName, 'Нет связи с компьютером');
+    if (!navigator.onLine) setText(els.serverName, t('msg.noConnection'));
   }
 
   async function requestWakeLock() {
@@ -955,7 +1159,7 @@
         await sleep(450 * (2 ** attempt));
       }
     }
-    throw lastError || new TransferError('Не удалось выполнить запрос.');
+    throw lastError || new TransferError(t('err.requestFailed'));
   }
 
   async function apiJson(url, options = {}) {
@@ -970,16 +1174,16 @@
         },
       });
     } catch {
-      throw new TransferError('Связь с компьютером прервалась. Проверьте Wi-Fi.');
+      throw new TransferError(t('err.noConnectionWifi'));
     }
 
     if (response.status === 401) {
       window.location.replace('/join');
-      throw new TransferError('Требуется подключение к FireDrop.', 401);
+      throw new TransferError(t('err.needJoin'), 401);
     }
 
     if (!response.ok) {
-      let message = `Ошибка компьютера (${response.status})`;
+      let message = REPL(t('tpl.errComputer'), [response.status]);
       try {
         const body = await response.json();
         if (body?.error) message = body.error;
@@ -1014,8 +1218,8 @@
   }
 
   function formatBytes(bytes) {
-    if (!Number.isFinite(bytes) || bytes <= 0) return '0\u00a0Б';
-    const units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'];
+    const units = t('bytes.units');
+    if (!Number.isFinite(bytes) || bytes <= 0) return `0\u00a0${units[0]}`;
     let value = bytes;
     let unit = 0;
     while (value >= 1024 && unit < units.length - 1) {
@@ -1023,7 +1227,7 @@
       unit += 1;
     }
     const digits = value >= 100 || unit === 0 ? 0 : (value >= 10 ? 1 : 2);
-    return `${value.toFixed(digits).replace('.', ',')}\u00a0${units[unit]}`;
+    return `${value.toFixed(digits).replace('.', DECIMAL_SEP)}\u00a0${units[unit]}`;
   }
 
   function formatSpeed(bytesPerSecond) {
@@ -1033,37 +1237,36 @@
 
   function formatSpeedParts(bytesPerSecond) {
     if (!Number.isFinite(bytesPerSecond) || bytesPerSecond <= 0) {
-      return { value: '0', unit: 'МБ/с' };
+      return { value: '0', unit: t('unit.speedMB') };
     }
 
     const megabytes = bytesPerSecond / (1024 * 1024);
     if (megabytes >= 1024) {
-      return { value: (megabytes / 1024).toFixed(1).replace('.', ','), unit: 'ГБ/с' };
+      return { value: (megabytes / 1024).toFixed(1).replace('.', DECIMAL_SEP), unit: t('unit.speedGB') };
     }
     if (megabytes >= 1) {
-      return { value: megabytes.toFixed(1).replace('.', ','), unit: 'МБ/с' };
+      return { value: megabytes.toFixed(1).replace('.', DECIMAL_SEP), unit: t('unit.speedMB') };
     }
     return {
       value: Math.max(0, Math.round(bytesPerSecond / 1024)).toString(),
-      unit: 'КБ/с',
+      unit: t('unit.speedKB'),
     };
   }
 
   function formatDuration(seconds) {
-    if (!Number.isFinite(seconds) || seconds <= 0) return '0 сек';
-    if (seconds < 1) return 'меньше секунды';
-    if (seconds < 60) return `${Math.ceil(seconds)} сек`;
+    if (!Number.isFinite(seconds) || seconds <= 0) return t('dur.zero');
+    if (seconds < 1) return t('dur.moment');
+    if (seconds < 60) return REPL(t('tpl.durSeconds'), [Math.ceil(seconds)]);
     if (seconds < 3600) {
-      const minutes = Math.ceil(seconds / 60);
-      return `${minutes} мин`;
+      return REPL(t('tpl.durMinutes'), [Math.ceil(seconds / 60)]);
     }
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.ceil((seconds % 3600) / 60);
-    return `${hours} ч ${minutes} мин`;
+    return REPL(t('tpl.durHours'), [hours, minutes]);
   }
 
   function shortName(name) {
-    if (!name) return 'файл';
+    if (!name) return t('msg.file');
     return name.length > 32 ? `${name.slice(0, 29)}…` : name;
   }
 

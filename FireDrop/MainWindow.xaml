@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:controls="clr-namespace:FireDrop.Controls"
-        Title="FireDrop — приём файлов"
+        xmlns:local="clr-namespace:FireDrop"
+        Title="{local:T ui.window.title}"
         Width="1180" Height="860" MinWidth="1060" MinHeight="840"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" ResizeMode="CanResize"
@@ -92,7 +93,7 @@
                             <TextBlock Text="FireDrop" FontFamily="{StaticResource DisplayFont}"
                                        FontSize="18" FontWeight="SemiBold"
                                        Foreground="{StaticResource TextPrimaryBrush}" />
-                            <TextBlock Text="с телефона на компьютер" FontSize="10.5"
+                            <TextBlock Text="{local:T ui.tagline}" FontSize="10.5"
                                        Foreground="{StaticResource TextMutedBrush}" Margin="0,1,0,0" />
                         </StackPanel>
                     </StackPanel>
@@ -103,7 +104,7 @@
                                 BorderBrush="#4034D399" BorderThickness="1">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <Ellipse x:Name="StatusDot" Width="7" Height="7" Fill="{StaticResource SuccessBrush}" />
-                                <TextBlock x:Name="StatusText" Text="Запуск сервера…" FontSize="11.5"
+                                <TextBlock x:Name="StatusText" Text="{local:T ui.status.starting}" FontSize="11.5"
                                            FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}"
                                            Margin="7,0,0,0" VerticalAlignment="Center" />
                             </StackPanel>
@@ -112,8 +113,8 @@
                         <Border Width="1" Height="22" Background="#1A2942" Margin="14,0,10,0" />
 
                         <Button x:Name="SendToPhoneButton" Style="{StaticResource IconButtonStyle}"
-                                Click="SendToPhoneButton_Click" ToolTip="Отправить на телефон"
-                                AutomationProperties.Name="Отправить на телефон">
+                                Click="SendToPhoneButton_Click" ToolTip="{local:T ui.send.tooltip}"
+                                AutomationProperties.Name="{local:T ui.send.tooltip}">
                             <Path Data="M2 11l17-8-8 17-2.5-6.5z" Width="15" Height="15" Stretch="Uniform"
                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                   StrokeThickness="1.6" StrokeLineJoin="Round" StrokeStartLineCap="Round"
@@ -121,8 +122,8 @@
                         </Button>
 
                         <Button x:Name="AboutButton" Style="{StaticResource IconButtonStyle}"
-                                Click="AboutButton_Click" ToolTip="О приложении"
-                                AutomationProperties.Name="О приложении">
+                                Click="AboutButton_Click" ToolTip="{local:T ui.about.tooltip}"
+                                AutomationProperties.Name="{local:T ui.about.tooltip}">
                             <Path Data="M9 2.9a6.1 6.1 0 1 0 0 12.2A6.1 6.1 0 0 0 9 2.9zM9 5.6v.03M9 7.9v4.3"
                                   Width="15" Height="15" Stretch="Uniform"
                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
@@ -131,8 +132,8 @@
                         </Button>
 
                         <Button x:Name="SettingsButton" Style="{StaticResource IconButtonStyle}"
-                                Click="SettingsButton_Click" ToolTip="Настройки"
-                                AutomationProperties.Name="Настройки">
+                                Click="SettingsButton_Click" ToolTip="{local:T ui.settings.tooltip}"
+                                AutomationProperties.Name="{local:T ui.settings.tooltip}">
                             <Grid Width="18" Height="18">
                                 <Path Data="M1 5.5H17 M1 12.5H17"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
@@ -149,24 +150,24 @@
                         </Button>
 
                         <Button x:Name="MinimizeButton" Style="{StaticResource CaptionButtonStyle}"
-                                Click="Minimize_Click" ToolTip="Свернуть"
-                                AutomationProperties.Name="Свернуть окно">
+                                Click="Minimize_Click" ToolTip="{local:T ui.minimize.tooltip}"
+                                AutomationProperties.Name="{local:T ui.minimize.automation}">
                             <Path Data="M4 12h16" Width="16" Height="16" Stretch="Uniform"
                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                   StrokeThickness="1.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                         </Button>
 
                         <Button x:Name="MaximizeButton" Style="{StaticResource CaptionButtonStyle}"
-                                Click="Maximize_Click" ToolTip="Развернуть"
-                                AutomationProperties.Name="Развернуть окно">
+                                Click="Maximize_Click" ToolTip="{local:T ui.maximize.tooltip}"
+                                AutomationProperties.Name="{local:T ui.maximize.automation}">
                             <Path x:Name="MaximizeIcon" Data="M4 4h16v16H4z" Width="13" Height="13" Stretch="Uniform"
                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                   StrokeThickness="1.6" StrokeLineJoin="Round" />
                         </Button>
 
                         <Button x:Name="CloseButton" Style="{StaticResource CloseCaptionButtonStyle}"
-                                Click="CloseWindow_Click" ToolTip="Закрыть"
-                                AutomationProperties.Name="Закрыть FireDrop">
+                                Click="CloseWindow_Click" ToolTip="{local:T ui.close.tooltip}"
+                                AutomationProperties.Name="{local:T ui.close.automation}">
                             <Path Data="M5 5l14 14M19 5 5 19" Width="13" Height="13" Stretch="Uniform"
                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                   StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
@@ -185,9 +186,9 @@
 
                 <Grid>
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock Style="{StaticResource H1Style}" Text="Файлы с телефона — сразу на компьютер" />
+                        <TextBlock Style="{StaticResource H1Style}" Text="{local:T ui.h1}" />
                         <TextBlock Style="{StaticResource BodyMutedStyle}" Margin="0,5,0,0"
-                                   Text="Без облака, кабелей и сжатия. Наведите камеру телефона на QR-код — и выбирайте файлы." />
+                                   Text="{local:T ui.h1.subtitle}" />
                     </StackPanel>
 
                     <Border HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -198,7 +199,7 @@
                                   Stroke="{StaticResource SuccessBrush}" StrokeThickness="2"
                                   StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
                                   VerticalAlignment="Center" />
-                            <TextBlock Text="Только ваша локальная сеть" FontSize="11.5"
+                            <TextBlock Text="{local:T ui.badge.lan}" FontSize="11.5"
                                        Foreground="{StaticResource TextSecondaryBrush}"
                                        Margin="7,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
@@ -237,15 +238,15 @@
 
                             <Grid>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="ПОДКЛЮЧЕНИЕ" Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center" />
+                                    <TextBlock Text="{local:T ui.section.connection}" Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center" />
                                     <Border Background="#17253B" CornerRadius="6" Padding="6,2" Margin="8,0,0,0">
-                                        <TextBlock Text="ТЕЛЕФОН → ПК" FontSize="8.5" FontWeight="SemiBold"
+                                        <TextBlock Text="{local:T ui.section.phonepc}" FontSize="8.5" FontWeight="SemiBold"
                                                    Foreground="{StaticResource TextSecondaryBrush}" />
                                     </Border>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                     <Ellipse x:Name="QrLiveDot" Width="6" Height="6" Fill="{StaticResource SuccessBrush}" VerticalAlignment="Center" />
-                                    <TextBlock x:Name="QrLiveText" Text="онлайн" FontSize="10"
+                                    <TextBlock x:Name="QrLiveText" Text="{local:T ui.status.online}" FontSize="10"
                                                Foreground="{StaticResource TextMutedBrush}" Margin="5,0,0,0" />
                                 </StackPanel>
                             </Grid>
@@ -253,7 +254,7 @@
                             <Grid Grid.Row="2" HorizontalAlignment="Center">
                                 <Border Width="252" Height="252" CornerRadius="18" Background="#FFFFFF" Padding="8">
                                     <controls:QrImage x:Name="QrCodeImage"
-                                                      AutomationProperties.Name="QR-код для подключения телефона" />
+                                                      AutomationProperties.Name="{local:T ui.qr.automation}" />
                                 </Border>
 
                                 <Border x:Name="QrStatePanel" Width="252" Height="252" CornerRadius="18"
@@ -267,26 +268,26 @@
                                                   StrokeThickness="1.7" StrokeStartLineCap="Round"
                                                   StrokeEndLineCap="Round" StrokeLineJoin="Round" />
                                         </Border>
-                                        <TextBlock x:Name="QrStateTitle" Text="Сервер не запущен"
+                                        <TextBlock x:Name="QrStateTitle" Text="{local:T ui.state.server}"
                                                    FontSize="14" FontWeight="SemiBold"
                                                    Foreground="{StaticResource TextPrimaryBrush}"
                                                    HorizontalAlignment="Center" Margin="0,12,0,0" />
-                                        <TextBlock x:Name="QrStateText" Text="Проверьте настройки и попробуйте снова."
+                                        <TextBlock x:Name="QrStateText" Text="{local:T ui.qr.server.hint}"
                                                    FontSize="10.5" Foreground="{StaticResource TextMutedBrush}"
                                                    TextWrapping="Wrap" TextAlignment="Center"
                                                    LineHeight="16" Margin="0,6,0,0" />
                                         <Button x:Name="QrStateAction" Style="{StaticResource SmallSecondaryButtonStyle}"
-                                                Content="Повторить" HorizontalAlignment="Center"
+                                                Content="{local:T ui.action.retry}" HorizontalAlignment="Center"
                                                 Margin="0,13,0,0" Click="QrStateAction_Click" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
 
                             <StackPanel Grid.Row="4">
-                                <TextBlock Text="Наведите камеру телефона" FontSize="16" FontWeight="SemiBold"
+                                <TextBlock Text="{local:T ui.qr.hint.title}" FontSize="16" FontWeight="SemiBold"
                                            FontFamily="{StaticResource DisplayFont}"
                                            Foreground="{StaticResource TextPrimaryBrush}" />
-                                <TextBlock Text="QR-код откроет страницу приёма. Код доступа уже внутри ссылки."
+                                <TextBlock Text="{local:T ui.qr.hint.text}"
                                            Style="{StaticResource BodyMutedStyle}" FontSize="11.5"
                                            Margin="0,4,0,0" />
                             </StackPanel>
@@ -305,8 +306,8 @@
                                                TextTrimming="CharacterEllipsis" />
                                     <Button x:Name="CopyLinkButton" Grid.Column="1" Style="{StaticResource IconButtonStyle}"
                                             Width="32" Height="32" Margin="0,0,4,0"
-                                            Click="CopyLink_Click" ToolTip="Скопировать ссылку с доступом"
-                                            AutomationProperties.Name="Скопировать ссылку для телефона">
+                                            Click="CopyLink_Click" ToolTip="{local:T ui.copylink.tooltip}"
+                                            AutomationProperties.Name="{local:T ui.copylink.automation}">
                                         <Path Data="M9 9h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2Z M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h1"
                                               Width="15" Height="15" Stretch="Uniform"
                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
@@ -318,12 +319,12 @@
                             <Border Grid.Row="8" Height="1" Background="#17253B" />
 
                             <Grid Grid.Row="10">
-                                <TextBlock Text="Или введите код на телефоне" FontSize="11.5"
+                                <TextBlock Text="{local:T ui.pin.caption}" FontSize="11.5"
                                            Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                 <Button x:Name="CopyPinButton" Style="{StaticResource TextButtonStyle}"
-                                        Content="Скопировать" Padding="6,2" HorizontalAlignment="Right"
+                                        Content="{local:T ui.action.copy}" Padding="6,2" HorizontalAlignment="Right"
                                         Click="CopyPin_Click" FontSize="10.5"
-                                        AutomationProperties.Name="Скопировать код доступа" />
+                                        AutomationProperties.Name="{local:T ui.copypin.automation}" />
                             </Grid>
 
                             <ItemsControl x:Name="PinItems" Grid.Row="12" HorizontalAlignment="Left">
@@ -357,14 +358,14 @@
                                     <TextBlock Grid.Column="1" Margin="9,0,0,0" FontSize="10.5"
                                                Foreground="{StaticResource TextSecondaryBrush}"
                                                TextWrapping="Wrap" LineHeight="15"
-                                               Text="Для максимальной скорости держите телефон рядом с роутером и выбирайте сеть 5 ГГц." />
+                                               Text="{local:T ui.tip.speed}" />
                                 </Grid>
                             </Border>
 
                             <Button x:Name="AddressButton" Grid.Row="16" Style="{StaticResource AddressButtonStyle}"
                                     Margin="-9,0,-9,0" Click="AddressButton_Click"
-                                    ToolTip="Выбрать сетевой адрес"
-                                    AutomationProperties.Name="Сетевой адрес для подключения">
+                                    ToolTip="{local:T ui.address.tooltip}"
+                                    AutomationProperties.Name="{local:T ui.address.automation}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -375,7 +376,7 @@
                                           Width="13" Height="13" Stretch="Uniform" Stroke="{StaticResource AccentBrush}"
                                           StrokeThickness="1.5" StrokeStartLineCap="Round"
                                           StrokeEndLineCap="Round" VerticalAlignment="Center" />
-                                    <TextBlock x:Name="AddressText" Grid.Column="1" Text="Поиск сети…"
+                                    <TextBlock x:Name="AddressText" Grid.Column="1" Text="{local:T ui.status.searching}"
                                                FontSize="10.5" Foreground="{StaticResource TextMutedBrush}"
                                                Margin="7,0,0,0" VerticalAlignment="Center"
                                                TextTrimming="CharacterEllipsis" />
@@ -414,10 +415,10 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel>
-                                        <TextBlock Text="СКОРОСТЬ" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
-                                        <TextBlock x:Name="SpeedValueText" Text="0 МБ/с"
+                                        <TextBlock Text="{local:T ui.stat.speed}" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
+                                        <TextBlock x:Name="SpeedValueText" Text="{local:T ui.stat.speed.zero}"
                                                    Style="{StaticResource StatValueStyle}" Margin="0,3,0,0" />
-                                        <TextBlock x:Name="SpeedHintText" Text="ожидание"
+                                        <TextBlock x:Name="SpeedHintText" Text="{local:T ui.status.waiting}"
                                                    Style="{StaticResource SmallMutedStyle}" FontSize="9.5" Margin="0,1,0,0" />
                                     </StackPanel>
                                     <Border Grid.Column="1" Width="28" Height="28" CornerRadius="9"
@@ -435,10 +436,10 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel>
-                                        <TextBlock Text="ПРИНЯТО" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
+                                        <TextBlock Text="{local:T ui.stat.received}" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
                                         <TextBlock x:Name="FilesValueText" Text="0"
                                                    Style="{StaticResource StatValueStyle}" Margin="0,3,0,0" />
-                                        <TextBlock Text="файлов за сеанс" Style="{StaticResource SmallMutedStyle}"
+                                        <TextBlock Text="{local:T ui.stat.received.hint}" Style="{StaticResource SmallMutedStyle}"
                                                    FontSize="9.5" Margin="0,1,0,0" />
                                     </StackPanel>
                                     <Border Grid.Column="1" Width="28" Height="28" CornerRadius="9"
@@ -458,10 +459,10 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel>
-                                        <TextBlock Text="ОБЪЁМ" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
-                                        <TextBlock x:Name="VolumeValueText" Text="0 Б"
+                                        <TextBlock Text="{local:T ui.stat.volume}" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
+                                        <TextBlock x:Name="VolumeValueText" Text="{local:T ui.stat.volume.zero}"
                                                    Style="{StaticResource StatValueStyle}" Margin="0,3,0,0" />
-                                        <TextBlock Text="за этот сеанс" Style="{StaticResource SmallMutedStyle}"
+                                        <TextBlock Text="{local:T ui.stat.volume.hint}" Style="{StaticResource SmallMutedStyle}"
                                                    FontSize="9.5" Margin="0,1,0,0" />
                                     </StackPanel>
                                     <Border Grid.Column="1" Width="28" Height="28" CornerRadius="9"
@@ -491,17 +492,17 @@
                                 </Border>
 
                                 <StackPanel Grid.Column="1" Margin="11,0,12,0" VerticalAlignment="Center">
-                                    <TextBlock Text="ПАПКА СОХРАНЕНИЯ" Style="{StaticResource SectionLabelStyle}" FontSize="8.5" />
-                                    <TextBlock x:Name="FolderPathText" Text="Загрузки\FireDrop"
+                                    <TextBlock Text="{local:T ui.section.folder}" Style="{StaticResource SectionLabelStyle}" FontSize="8.5" />
+                                    <TextBlock x:Name="FolderPathText" Text="{local:T ui.folder.default}"
                                                FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"
                                                Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                                     <Button x:Name="OpenFolderButton" Style="{StaticResource SmallSecondaryButtonStyle}"
-                                            Content="Открыть" Click="OpenFolder_Click" />
+                                            Content="{local:T ui.action.open}" Click="OpenFolder_Click" />
                                     <Button x:Name="ChangeFolderButton" Style="{StaticResource TextButtonStyle}"
-                                            Content="Изменить" Click="ChangeFolder_Click" Margin="6,0,0,0" />
+                                            Content="{local:T ui.action.change}" Click="ChangeFolder_Click" Margin="6,0,0,0" />
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -515,7 +516,7 @@
 
                                 <Grid Margin="20,14,14,8">
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock Text="Принятые файлы" Style="{StaticResource H2Style}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{local:T ui.files.title}" Style="{StaticResource H2Style}" VerticalAlignment="Center" />
                                         <Border Background="#16253C" CornerRadius="7" Padding="7,1.5" Margin="9,0,0,0"
                                                 VerticalAlignment="Center">
                                             <TextBlock x:Name="FilesCountBadge" Text="0" FontSize="10.5"
@@ -524,7 +525,7 @@
                                     </StackPanel>
 
                                     <Button x:Name="ClearButton" Style="{StaticResource TextButtonStyle}"
-                                            Content="Очистить" HorizontalAlignment="Right" Click="ClearFiles_Click" />
+                                            Content="{local:T ui.action.clear}" HorizontalAlignment="Right" Click="ClearFiles_Click" />
                                 </Grid>
 
                                 <Grid Grid.Row="1" Margin="8,0,4,8">
@@ -608,10 +609,10 @@
                                                       StrokeThickness="1.7" StrokeStartLineCap="Round"
                                                       StrokeEndLineCap="Round" StrokeLineJoin="Round" />
                                             </Border>
-                                            <TextBlock Text="Пока пусто" FontSize="14" FontWeight="SemiBold"
+                                            <TextBlock Text="{local:T ui.empty.title}" FontSize="14" FontWeight="SemiBold"
                                                        Foreground="{StaticResource TextSecondaryBrush}"
                                                        HorizontalAlignment="Center" Margin="0,11,0,0" />
-                                            <TextBlock Text="Отправьте файл с телефона — он появится здесь."
+                                            <TextBlock Text="{local:T ui.empty.text}"
                                                        FontSize="11.5" Foreground="{StaticResource TextMutedBrush}"
                                                        HorizontalAlignment="Center" Margin="0,4,0,0" />
                                         </StackPanel>
@@ -628,11 +629,11 @@
                 <Grid Margin="34,0">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Ellipse x:Name="FooterStateDot" Width="6" Height="6" Fill="{StaticResource SuccessBrush}" />
-                        <TextBlock x:Name="FooterStateText" Text="Сервер работает"
+                        <TextBlock x:Name="FooterStateText" Text="{local:T ui.footer.running}"
                                    FontSize="10.5" Foreground="{StaticResource TextMutedBrush}"
                                    Margin="7,0,0,0" VerticalAlignment="Center" />
                     </StackPanel>
-                    <TextBlock x:Name="VersionText" Text="FireDrop 1.2.3 · только локальная сеть"
+                    <TextBlock x:Name="VersionText" Text="{local:T ui.version.default}"
                                FontSize="10.5" Foreground="{StaticResource TextDimBrush}"
                                HorizontalAlignment="Right" VerticalAlignment="Center" />
                 </Grid>
@@ -658,15 +659,15 @@
 
                         <Grid Margin="26,20,16,12">
                             <StackPanel>
-                                <TextBlock Text="Настройки" FontFamily="{StaticResource DisplayFont}"
+                                <TextBlock Text="{local:T ui.settings.tooltip}" FontFamily="{StaticResource DisplayFont}"
                                            FontSize="20" FontWeight="SemiBold"
                                            Foreground="{StaticResource TextPrimaryBrush}" />
-                                <TextBlock Text="Имя, папка и параметры сети" FontSize="11.5"
+                                <TextBlock Text="{local:T ui.settings.subtitle}" FontSize="11.5"
                                            Foreground="{StaticResource TextMutedBrush}" Margin="0,3,0,0" />
                             </StackPanel>
                             <Button x:Name="CloseSettingsButton" Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right"
-                                    VerticalAlignment="Top" Click="CloseSettings_Click" ToolTip="Закрыть"
-                                    AutomationProperties.Name="Закрыть настройки">
+                                    VerticalAlignment="Top" Click="CloseSettings_Click" ToolTip="{local:T ui.close.tooltip}"
+                                    AutomationProperties.Name="{local:T ui.close.settings.automation}">
                                 <Path Data="M5 5l14 14M19 5 5 19" Width="13" Height="13" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                       StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
@@ -675,14 +676,14 @@
 
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="26,0,18,0">
                             <StackPanel Margin="0,4,8,10">
-                                <TextBlock Text="ИМЯ КОМПЬЮТЕРА" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
+                                <TextBlock Text="{local:T ui.section.name}" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
                                 <TextBox x:Name="DeviceNameBox" Style="{StaticResource TextBoxStyle}"
                                          Margin="0,6,0,0" MaxLength="40"
-                                         AutomationProperties.Name="Имя компьютера" />
-                                <TextBlock Text="Так компьютер называется на странице телефона."
+                                         AutomationProperties.Name="{local:T ui.name.automation}" />
+                                <TextBlock Text="{local:T ui.name.hint}"
                                            Style="{StaticResource SmallMutedStyle}" Margin="0,5,0,0" />
 
-                                <TextBlock Text="ПАПКА СОХРАНЕНИЯ" Style="{StaticResource SectionLabelStyle}"
+                                <TextBlock Text="{local:T ui.section.folder}" Style="{StaticResource SectionLabelStyle}"
                                            FontSize="9" Margin="0,16,0,0" />
                                 <Grid Margin="0,6,0,0">
                                     <Grid.ColumnDefinitions>
@@ -691,10 +692,10 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <TextBox x:Name="SaveFolderBox" Style="{StaticResource TextBoxStyle}"
-                                             AutomationProperties.Name="Папка сохранения" />
-                                    <Button Grid.Column="2" Content="Обзор…" Style="{StaticResource SecondaryButtonStyle}"
+                                             AutomationProperties.Name="{local:T ui.savefolder.automation}" />
+                                    <Button Grid.Column="2" Content="{local:T ui.action.browse}" Style="{StaticResource SecondaryButtonStyle}"
                                             Height="40" Width="88" Click="BrowseFolder_Click"
-                                            AutomationProperties.Name="Выбрать папку сохранения" />
+                                            AutomationProperties.Name="{local:T ui.browse.automation}" />
                                 </Grid>
 
                                 <Grid Margin="0,16,0,0">
@@ -704,37 +705,37 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel>
-                                        <TextBlock Text="ПОРТ" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
+                                        <TextBlock Text="{local:T ui.section.port}" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
                                         <TextBox x:Name="PortBox" Style="{StaticResource TextBoxStyle}"
                                                  Margin="0,6,0,0" MaxLength="5"
                                                  PreviewTextInput="PortBox_PreviewTextInput"
                                                  DataObject.Pasting="PortBox_OnPaste"
-                                                 AutomationProperties.Name="Порт сервера" />
+                                                 AutomationProperties.Name="{local:T ui.port.automation}" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="2" VerticalAlignment="Bottom" Margin="0,0,0,2">
-                                        <TextBlock Text="От 1024 до 65535. Если порт занят другой программой, выберите свободный."
+                                        <TextBlock Text="{local:T ui.port.hint}"
                                                    Style="{StaticResource SmallMutedStyle}" TextWrapping="Wrap" LineHeight="15" />
-                                        <TextBlock x:Name="CurrentPortText" Text="Сейчас используется порт 47820"
+                                        <TextBlock x:Name="CurrentPortText" Text="{local:T ui.port.current.default}"
                                                    FontSize="10" Foreground="{StaticResource TextDimBrush}"
                                                    Margin="0,4,0,0" />
                                     </StackPanel>
                                 </Grid>
 
                                 <CheckBox x:Name="AutostartCheck" Style="{StaticResource CheckBoxStyle}" Margin="0,20,0,0"
-                                          AutomationProperties.Name="Запускать при входе в Windows">
+                                          AutomationProperties.Name="{local:T ui.autostart.label}">
                                     <StackPanel>
-                                        <TextBlock Text="Запускать при входе в Windows" FontSize="12.5" />
-                                        <TextBlock Text="FireDrop будет готов принимать файлы сразу после включения компьютера."
+                                        <TextBlock Text="{local:T ui.autostart.label}" FontSize="12.5" />
+                                        <TextBlock Text="{local:T ui.autostart.hint}"
                                                    Style="{StaticResource SmallMutedStyle}" FontSize="10.5"
                                                    Margin="0,2,0,0" TextWrapping="Wrap" />
                                     </StackPanel>
                                 </CheckBox>
 
                                 <CheckBox x:Name="TrayCheck" Style="{StaticResource CheckBoxStyle}" Margin="0,14,0,0"
-                                          AutomationProperties.Name="Сворачивать в трей при закрытии">
+                                          AutomationProperties.Name="{local:T ui.tray.label}">
                                     <StackPanel>
-                                        <TextBlock Text="Сворачивать в трей при закрытии" FontSize="12.5" />
-                                        <TextBlock Text="Приём файлов продолжится, даже когда окно скрыто."
+                                        <TextBlock Text="{local:T ui.tray.label}" FontSize="12.5" />
+                                        <TextBlock Text="{local:T ui.tray.hint}"
                                                    Style="{StaticResource SmallMutedStyle}" FontSize="10.5"
                                                    Margin="0,2,0,0" TextWrapping="Wrap" />
                                     </StackPanel>
@@ -748,20 +749,20 @@
                                                   Width="16" Height="16" Stretch="Uniform"
                                                   Stroke="{StaticResource WarningBrush}" StrokeThickness="1.5"
                                                   StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-                                            <TextBlock Text="Брандмауэр Windows" FontSize="12.5" FontWeight="SemiBold"
+                                            <TextBlock Text="{local:T ui.firewall.title}" FontSize="12.5" FontWeight="SemiBold"
                                                        Foreground="{StaticResource TextPrimaryBrush}"
                                                        Margin="9,0,0,0" VerticalAlignment="Center" />
                                         </StackPanel>
                                         <TextBlock x:Name="FirewallStatusText"
-                                                   Text="Проверяем правила…"
+                                                   Text="{local:T ui.firewall.checking.idle}"
                                                    FontSize="10.5" LineHeight="15" TextWrapping="Wrap"
                                                    Foreground="{StaticResource TextMutedBrush}"
                                                    Margin="0,6,0,0" />
-                                        <Button x:Name="FirewallButton" Content="Разрешить FireDrop в сети"
+                                        <Button x:Name="FirewallButton" Content="{local:T ui.firewall.button}"
                                                 Style="{StaticResource SecondaryButtonStyle}" Height="34"
                                                 Padding="14,0" HorizontalAlignment="Left" Margin="0,9,0,0"
                                                 Click="FirewallButton_Click"
-                                                AutomationProperties.Name="Разрешить FireDrop в брандмауэре" />
+                                                AutomationProperties.Name="{local:T ui.firewall.button.name}" />
                                     </StackPanel>
                                 </Border>
 
@@ -775,7 +776,7 @@
                                               VerticalAlignment="Top" Margin="0,1,0,0" />
                                         <TextBlock Margin="9,0,0,0" FontSize="10.5" LineHeight="15"
                                                    Foreground="{StaticResource TextMutedBrush}" TextWrapping="Wrap"
-                                                   Text="После смены порта сервер перезапустится, а ссылка и QR-код обновятся автоматически." />
+                                                   Text="{local:T ui.port.note}" />
                                     </StackPanel>
                                 </Border>
 
@@ -787,12 +788,12 @@
 
                         <Border Grid.Row="2" BorderBrush="#192942" BorderThickness="0,1,0,0" Padding="26,14">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button Content="Отмена" Style="{StaticResource SecondaryButtonStyle}"
+                                <Button Content="{local:T ui.action.cancel}" Style="{StaticResource SecondaryButtonStyle}"
                                         Width="92" Click="CloseSettings_Click" />
-                                <Button x:Name="SaveSettingsButton" Content="Сохранить"
+                                <Button x:Name="SaveSettingsButton" Content="{local:T ui.action.save}"
                                         Style="{StaticResource PrimaryButtonStyle}" Width="124"
                                         Margin="10,0,0,0" Click="SaveSettings_Click"
-                                        AutomationProperties.Name="Сохранить настройки" />
+                                        AutomationProperties.Name="{local:T ui.save.automation}" />
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -819,16 +820,16 @@
 
                         <Grid Margin="26,20,16,12">
                             <StackPanel>
-                                <TextBlock Text="О приложении" FontFamily="{StaticResource DisplayFont}"
+                                <TextBlock Text="{local:T ui.about.tooltip}" FontFamily="{StaticResource DisplayFont}"
                                            FontSize="20" FontWeight="SemiBold"
                                            Foreground="{StaticResource TextPrimaryBrush}" />
-                                <TextBlock x:Name="AboutVersionText" Text="FireDrop 1.2.3"
+                                <TextBlock x:Name="AboutVersionText" Text="{local:T ui.about.version}"
                                            FontSize="11.5" Foreground="{StaticResource TextMutedBrush}"
                                            Margin="0,3,0,0" />
                             </StackPanel>
                             <Button Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right"
-                                    VerticalAlignment="Top" Click="CloseAbout_Click" ToolTip="Закрыть"
-                                    AutomationProperties.Name="Закрыть страницу приложения">
+                                    VerticalAlignment="Top" Click="CloseAbout_Click" ToolTip="{local:T ui.close.tooltip}"
+                                    AutomationProperties.Name="{local:T ui.close.about.automation}">
                                 <Path Data="M5 5l14 14M19 5 5 19" Width="13" Height="13" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                       StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
@@ -837,35 +838,35 @@
 
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="26,0,18,0">
                             <StackPanel Margin="0,4,8,10">
-                                <TextBlock Text="Что такое FireDrop"
+                                <TextBlock Text="{local:T ui.about.what}"
                                            FontSize="14" FontWeight="SemiBold"
                                            Foreground="{StaticResource TextPrimaryBrush}" />
-                                <TextBlock Text="Быстрый обмен файлами и целыми папками по локальной Wi-Fi сети: с компьютера на телефон, с телефона на компьютер и с телефона на телефон. Работает без интернета, облака и регистрации — достаточно, чтобы устройства были в одной сети."
+                                <TextBlock Text="{local:T ui.about.description}"
                                            FontSize="11.5" LineHeight="18" TextWrapping="Wrap"
                                            Foreground="{StaticResource TextMutedBrush}" Margin="0,8,0,0" />
 
-                                <TextBlock Text="Главное"
+                                <TextBlock Text="{local:T ui.about.highlights}"
                                            FontSize="14" FontWeight="SemiBold"
                                            Foreground="{StaticResource TextPrimaryBrush}" Margin="0,18,0,0" />
                                 <StackPanel x:Name="AboutFacts">
-                                    <TextBlock Text="• Папки передаются целиком, структура вложенных папок сохраняется."
+                                    <TextBlock Text="{local:T ui.about.points.1}"
                                                FontSize="11.5" LineHeight="18" TextWrapping="Wrap"
                                                Foreground="{StaticResource TextMutedBrush}" Margin="0,7,0,0" />
-                                    <TextBlock Text="• Скорость ограничена только вашей Wi-Fi сетью: до 30 MB/s и выше, без облака в пути."
+                                    <TextBlock Text="{local:T ui.about.points.2}"
                                                FontSize="11.5" LineHeight="18" TextWrapping="Wrap"
                                                Foreground="{StaticResource TextMutedBrush}" Margin="0,7,0,0" />
-                                    <TextBlock Text="• Подключение — по QR-коду или шестизначному коду; данные не выходят за пределы сети."
+                                    <TextBlock Text="{local:T ui.about.points.3}"
                                                FontSize="11.5" LineHeight="18" TextWrapping="Wrap"
                                                Foreground="{StaticResource TextMutedBrush}" Margin="0,7,0,0" />
-                                    <TextBlock Text="• Приём без перезаписи: повторные файлы сохраняются рядом с номером (1), (2)…"
+                                    <TextBlock Text="{local:T ui.about.points.4}"
                                                FontSize="11.5" LineHeight="18" TextWrapping="Wrap"
                                                Foreground="{StaticResource TextMutedBrush}" Margin="0,7,0,0" />
                                 </StackPanel>
 
-                                <TextBlock Text="Вопросы или идеи?"
+                                <TextBlock Text="{local:T ui.about.feedback.title}"
                                            FontSize="14" FontWeight="SemiBold"
                                            Foreground="{StaticResource TextPrimaryBrush}" Margin="0,18,0,0" />
-                                <TextBlock Text="Автор приложения — @LoioshS. Напишите в Telegram: приложение локальное, но обратная связь обычно спасает следующий выпуск."
+                                <TextBlock Text="{local:T ui.about.feedback.text}"
                                            FontSize="11.5" LineHeight="18" TextWrapping="Wrap"
                                            Foreground="{StaticResource TextMutedBrush}" Margin="0,8,0,0" />
                             </StackPanel>
@@ -873,14 +874,14 @@
 
                         <Border Grid.Row="2" BorderBrush="#192942" BorderThickness="0,1,0,0" Padding="26,14">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button Content="Написать автору · Telegram"
+                                <Button Content="{local:T ui.action.author}"
                                         Style="{StaticResource SecondaryButtonStyle}" Height="40"
                                         Click="OpenAuthorTelegram_Click"
-                                        AutomationProperties.Name="Открыть Telegram автора @LoioshS" />
-                                <Button Content="Понятно"
+                                        AutomationProperties.Name="{local:T ui.author.automation}" />
+                                <Button Content="{local:T ui.action.understood}"
                                         Style="{StaticResource PrimaryButtonStyle}" Height="40" Width="110"
                                         Margin="10,0,0,0" Click="CloseAbout_Click"
-                                        AutomationProperties.Name="Закрыть страницу приложения" />
+                                        AutomationProperties.Name="{local:T ui.close.about.automation}" />
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -907,16 +908,16 @@
 
                         <Grid Margin="26,20,16,12">
                             <StackPanel>
-                                <TextBlock Text="Отправить на телефон" FontFamily="{StaticResource DisplayFont}"
+                                <TextBlock Text="{local:T ui.send.tooltip}" FontFamily="{StaticResource DisplayFont}"
                                            FontSize="20" FontWeight="SemiBold"
                                            Foreground="{StaticResource TextPrimaryBrush}" />
-                                <TextBlock Text="Файлы и папки с компьютера — в FireDrop на телефоне"
+                                <TextBlock Text="{local:T ui.send.subtitle}"
                                            FontSize="11.5" Foreground="{StaticResource TextMutedBrush}"
                                            Margin="0,3,0,0" />
                             </StackPanel>
                             <Button Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right"
-                                    VerticalAlignment="Top" Click="CloseSend_Click" ToolTip="Закрыть"
-                                    AutomationProperties.Name="Закрыть отправку">
+                                    VerticalAlignment="Top" Click="CloseSend_Click" ToolTip="{local:T ui.close.tooltip}"
+                                    AutomationProperties.Name="{local:T ui.close.send.automation}">
                                 <Path Data="M5 5l14 14M19 5 5 19" Width="13" Height="13" Stretch="Uniform"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                       StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
@@ -925,7 +926,7 @@
 
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="26,0,18,0">
                             <StackPanel Margin="0,4,8,10">
-                                <TextBlock Text="ПОЛУЧАТЕЛЬ" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
+                                <TextBlock Text="{local:T ui.section.recipient}" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
                                 <Grid Margin="0,6,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -934,13 +935,13 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBox x:Name="SendAddressBox" Style="{StaticResource TextBoxStyle}"
                                              MaxLength="160" TextChanged="SendAddressBox_TextChanged"
-                                             AutomationProperties.Name="Адрес получателя" />
-                                    <Button Grid.Column="2" x:Name="FindDevicesButton" Content="Найти рядом"
+                                             AutomationProperties.Name="{local:T ui.recipient.automation}" />
+                                    <Button Grid.Column="2" x:Name="FindDevicesButton" Content="{local:T ui.action.find}"
                                             Style="{StaticResource SecondaryButtonStyle}" Height="40" Width="112"
                                             Click="FindDevicesAsync_Click" MinWidth="112"
-                                            AutomationProperties.Name="Найти устройства рядом" />
+                                            AutomationProperties.Name="{local:T ui.find.automation}" />
                                 </Grid>
-                                <TextBlock Text="IP и порт из QR-кода получателя. Можно вставить код целиком — адрес подставится сам."
+                                <TextBlock Text="{local:T ui.recipient.hint}"
                                            Style="{StaticResource SmallMutedStyle}" Margin="0,5,0,0" />
                                 <ItemsControl x:Name="SendDevicesList" Margin="0,10,0,0" Visibility="Collapsed">
                                     <ItemsControl.ItemsPanel>
@@ -977,14 +978,14 @@
                                         BorderThickness="1" CornerRadius="11" Padding="12,10"
                                         Margin="0,8,0,0" Visibility="Collapsed">
                                     <StackPanel>
-                                        <TextBlock Text="Пустой список часто означает, что Windows блокирует FireDrop для нового файла программы."
+                                        <TextBlock Text="{local:T ui.search.firewall.hint}"
                                                    FontSize="10.5" LineHeight="15" TextWrapping="Wrap"
                                                    Foreground="{StaticResource TextMutedBrush}" />
-                                        <Button x:Name="SendFirewallButton" Content="Разрешить FireDrop в брандмауэре"
+                                        <Button x:Name="SendFirewallButton" Content="{local:T ui.firewall.button.name}"
                                                 Style="{StaticResource SmallSecondaryButtonStyle}" Height="32"
                                                 HorizontalAlignment="Left" Margin="0,8,0,0"
                                                 Click="FirewallButton_Click"
-                                                AutomationProperties.Name="Разрешить FireDrop в брандмауэре" />
+                                                AutomationProperties.Name="{local:T ui.firewall.button.name}" />
                                     </StackPanel>
                                 </Border>
 
@@ -995,15 +996,15 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel>
-                                        <TextBlock Text="КОД ПРИЁМА" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
+                                        <TextBlock Text="{local:T ui.section.pin}" Style="{StaticResource SectionLabelStyle}" FontSize="9" />
                                         <TextBox x:Name="SendPinBox" Style="{StaticResource TextBoxStyle}"
                                                  Margin="0,6,0,0" MaxLength="6"
                                                  PreviewTextInput="SendPinBox_PreviewTextInput"
                                                  DataObject.Pasting="SendPinBox_OnPaste"
-                                                 AutomationProperties.Name="Код приёма получателя" />
+                                                 AutomationProperties.Name="{local:T ui.pinrecipient.automation}" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="2" VerticalAlignment="Bottom" Margin="0,0,0,2">
-                                        <TextBlock Text="Шесть цифр с экрана получателя. Если вставили код с QR — он уже заполнен."
+                                        <TextBlock Text="{local:T ui.pinrecipient.hint}"
                                                    Style="{StaticResource SmallMutedStyle}" TextWrapping="Wrap" LineHeight="15" />
                                     </StackPanel>
                                 </Grid>
@@ -1012,20 +1013,20 @@
                                            FontSize="11.5" TextWrapping="Wrap" LineHeight="16" Margin="0,12,0,0"
                                            Visibility="Collapsed" />
 
-                                <TextBlock Text="ЧТО ОТПРАВИТЬ" Style="{StaticResource SectionLabelStyle}"
+                                <TextBlock Text="{local:T ui.section.send}" Style="{StaticResource SectionLabelStyle}"
                                            FontSize="9" Margin="0,18,0,0" />
                                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                    <Button x:Name="PickSendFilesButton" Content="Файлы…"
+                                    <Button x:Name="PickSendFilesButton" Content="{local:T ui.action.pickfiles}"
                                             Style="{StaticResource SecondaryButtonStyle}" Height="36" Width="102"
                                             Click="PickSendFiles_Click" MinWidth="102"
-                                            AutomationProperties.Name="Выбрать файлы для отправки" />
-                                    <Button x:Name="PickSendFolderButton" Content="Папка…"
+                                            AutomationProperties.Name="{local:T ui.pickfiles.automation}" />
+                                    <Button x:Name="PickSendFolderButton" Content="{local:T ui.action.pickfolder}"
                                             Style="{StaticResource SecondaryButtonStyle}" Height="36" Width="102"
                                             Margin="10,0,0,0" Click="PickSendFolder_Click" MinWidth="102"
-                                            AutomationProperties.Name="Выбрать папку для отправки" />
-                                    <Button x:Name="SendClearButton" Content="Очистить"
+                                            AutomationProperties.Name="{local:T ui.pickfolder.automation}" />
+                                    <Button x:Name="SendClearButton" Content="{local:T ui.action.clear}"
                                             Style="{StaticResource TextButtonStyle}" Margin="10,0,0,0"
-                                            Click="SendClear_Click" AutomationProperties.Name="Очистить список" />
+                                            Click="SendClear_Click" AutomationProperties.Name="{local:T ui.clearsend.automation}" />
                                 </StackPanel>
 
                                 <Border x:Name="SendFilesCard" Background="#0D1B2C" BorderBrush="#1A2C45"
@@ -1060,7 +1061,7 @@
                                 </Border>
                                 <TextBlock x:Name="SendQueueText" Style="{StaticResource SmallMutedStyle}"
                                            Margin="0,8,0,0" TextWrapping="Wrap"
-                                           Text="Пока ничего не выбрано." />
+                                           Text="{local:T ui.sendqueue.empty}" />
 
                                 <TextBlock x:Name="SendError" Foreground="{StaticResource DangerBrush}"
                                            FontSize="11" TextWrapping="Wrap" LineHeight="16"
@@ -1075,7 +1076,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel x:Name="SendProgressPanel" VerticalAlignment="Center" Visibility="Collapsed">
-                                    <TextBlock x:Name="SendProgressTitle" Text="Отправляем…" FontSize="11.5"
+                                    <TextBlock x:Name="SendProgressTitle" Text="{local:T ui.send.progressing}" FontSize="11.5"
                                                Foreground="{StaticResource TextPrimaryBrush}"
                                                TextTrimming="CharacterEllipsis" />
                                     <ProgressBar x:Name="SendProgressBar" Style="{StaticResource SlimProgressBarStyle}"
@@ -1085,14 +1086,14 @@
                                                TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button x:Name="SendCancelButton" Content="Отмена"
+                                    <Button x:Name="SendCancelButton" Content="{local:T ui.action.cancel}"
                                             Style="{StaticResource SecondaryButtonStyle}" Width="92" MinWidth="92"
                                             Click="SendCancel_Click" Visibility="Collapsed"
-                                            AutomationProperties.Name="Отменить передачу" />
-                                    <Button x:Name="SendActionButton" Content="Отправить"
+                                            AutomationProperties.Name="{local:T ui.cancel.automation}" />
+                                    <Button x:Name="SendActionButton" Content="{local:T ui.action.send}"
                                             Style="{StaticResource PrimaryButtonStyle}" Width="124" MinWidth="124"
                                             Margin="10,0,0,0" Click="SendAction_Click"
-                                            AutomationProperties.Name="Отправить выбранные файлы" />
+                                            AutomationProperties.Name="{local:T ui.sendaction.automation}" />
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -1120,7 +1121,7 @@
                               Stretch="Uniform" Stroke="{StaticResource SuccessBrush}" StrokeThickness="2"
                               StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
                     </Border>
-                    <TextBlock x:Name="ToastText" Text="Готово" FontSize="12"
+                    <TextBlock x:Name="ToastText" Text="{local:T ui.action.done}" FontSize="12"
                                Foreground="{StaticResource TextPrimaryBrush}"
                                VerticalAlignment="Center" Margin="10,0,0,0" TextWrapping="Wrap" />
                 </StackPanel>

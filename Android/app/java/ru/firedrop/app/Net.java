@@ -152,7 +152,8 @@ public final class Net {
         }
 
         public String subtitle() {
-            String type = "phone".equals(kind) ? "телефон" : "компьютер";
+            String type = "phone".equals(kind)
+                    ? L10n.s("net.device.phone") : L10n.s("net.device.pc");
             return host + ":" + port + " · " + type;
         }
     }

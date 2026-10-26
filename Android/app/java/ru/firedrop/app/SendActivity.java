@@ -123,23 +123,23 @@ public final class SendActivity extends Activity {
     // ------------------------------------------------------------------ UI
 
     private void build() {
-        screen = Ui.screen(this, "Отправить", "Выберите получателя и файлы", "← Назад");
+        screen = Ui.screen(this, L10n.s("send.title"), L10n.s("send.subtitle"), L10n.s("send.back"));
         LinearLayout content = screen.content;
 
         content.addView(targetCard());
         content.addView(sourceCard());
         content.addView(transferCard());
 
-        statusLine = Ui.text(this, "Файлы ещё не выбраны", 13, Ui.MUTED, false);
+        statusLine = Ui.text(this, L10n.s("send.status.none"), 13, Ui.MUTED, false);
         statusLine.setGravity(Gravity.CENTER);
         statusLine.setPadding(0, 0, 0, Ui.dp(this, 10));
         screen.bottom.addView(statusLine);
 
-        primaryButton = Ui.button(this, "Отправить", true);
+        primaryButton = Ui.button(this, L10n.s("send.title"), true);
         primaryButton.setOnClickListener(v -> onPrimary());
         screen.bottom.addView(primaryButton);
 
-        secondaryButton = Ui.button(this, "Отправить ещё", false);
+        secondaryButton = Ui.button(this, L10n.s("send.button.again"), false);
         secondaryButton.setVisibility(View.GONE);
         secondaryButton.setOnClickListener(v -> resetForNewTransfer());
         LinearLayout.LayoutParams secondaryParams = new LinearLayout.LayoutParams(
@@ -159,15 +159,15 @@ public final class SendActivity extends Activity {
         params.bottomMargin = Ui.dp(this, 14);
         card.setLayoutParams(params);
 
-        card.addView(Ui.text(this, "Получатель", 18, Ui.TEXT, true));
+        card.addView(Ui.text(this, L10n.s("send.target.title"), 18, Ui.TEXT, true));
 
         devicesHint = Ui.text(this,
-                "Найдите устройство в сети или введите адрес вручную.",
+                L10n.s("send.target.hint"),
                 13, Ui.MUTED, false);
         devicesHint.setPadding(0, Ui.dp(this, 6), 0, Ui.dp(this, 12));
         card.addView(devicesHint);
 
-        discoverButton = Ui.button(this, "Найти рядом", false);
+        discoverButton = Ui.button(this, L10n.s("send.find"), false);
         discoverButton.setOnClickListener(v -> discover());
         card.addView(discoverButton);
 
@@ -206,7 +206,7 @@ public final class SendActivity extends Activity {
         Ui.gap(this, card, 10);
 
         pinInput = new EditText(this);
-        pinInput.setHint("Код из 6 цифр");
+        pinInput.setHint(L10n.s("send.pin.hint"));
         pinInput.setText(prefs.lastPin());
         pinInput.setSingleLine(true);
         pinInput.setTextColor(Ui.TEXT);
@@ -219,7 +219,7 @@ public final class SendActivity extends Activity {
 
         Ui.gap(this, card, 10);
 
-        TextView scan = Ui.button(this, "Сканировать QR-код", false);
+        TextView scan = Ui.button(this, L10n.s("send.scan"), false);
         scan.setOnClickListener(v -> scanQr());
         card.addView(scan);
 
@@ -233,15 +233,15 @@ public final class SendActivity extends Activity {
         params.bottomMargin = Ui.dp(this, 14);
         sourceCard.setLayoutParams(params);
 
-        sourceCard.addView(Ui.text(this, "Что отправить", 18, Ui.TEXT, true));
+        sourceCard.addView(Ui.text(this, L10n.s("send.source.title"), 18, Ui.TEXT, true));
 
-        sourceSummary = Ui.text(this, "Ничего не выбрано", 13, Ui.MUTED, false);
+        sourceSummary = Ui.text(this, L10n.s("send.none"), 13, Ui.MUTED, false);
         sourceSummary.setPadding(0, Ui.dp(this, 6), 0, Ui.dp(this, 12));
         sourceCard.addView(sourceSummary);
 
         LinearLayout buttons = Ui.row(this);
-        TextView files = Ui.button(this, "Файлы", false);
-        TextView folder = Ui.button(this, "Папка", false);
+        TextView files = Ui.button(this, L10n.s("send.files"), false);
+        TextView folder = Ui.button(this, L10n.s("send.folder"), false);
         LinearLayout.LayoutParams first = new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         first.rightMargin = Ui.dp(this, 8);
@@ -268,13 +268,13 @@ public final class SendActivity extends Activity {
         transferCard.setLayoutParams(params);
 
         LinearLayout head = Ui.row(this);
-        transferTitle = Ui.text(this, "Передача", 18, Ui.TEXT, true);
+        transferTitle = Ui.text(this, L10n.s("send.transfer.title"), 18, Ui.TEXT, true);
         head.addView(transferTitle, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        head.addView(Ui.chip(this, "по Wi-Fi"));
+        head.addView(Ui.chip(this, L10n.s("send.chip.wifi")));
         transferCard.addView(head);
 
-        transferMeta = Ui.text(this, "Подготовка…", 13, Ui.MUTED, false);
+        transferMeta = Ui.text(this, L10n.s("send.preparing"), 13, Ui.MUTED, false);
         transferMeta.setPadding(0, Ui.dp(this, 6), 0, 0);
         transferCard.addView(transferMeta);
 
@@ -304,7 +304,7 @@ public final class SendActivity extends Activity {
         try {
             startActivityForResult(intent, REQUEST_FILES);
         } catch (Exception error) {
-            toast("На этом устройстве нет файлового менеджера");
+            toast(L10n.s("send.no.filepicker"));
         }
     }
 
@@ -315,7 +315,7 @@ public final class SendActivity extends Activity {
         try {
             startActivityForResult(intent, REQUEST_FOLDER);
         } catch (Exception error) {
-            toast("Выбор папки недоступен на этом устройстве");
+            toast(L10n.s("send.no.folderpicker"));
         }
     }
 
@@ -337,7 +337,7 @@ public final class SendActivity extends Activity {
             for (Uri uri : uris) keepPermission(uri);
             if (!uris.isEmpty()) {
                 final List<Uri> selected = uris;
-                statusLine.setText("Читаем выбранные файлы…");
+                statusLine.setText(L10n.s("send.reading.files"));
                 new Thread(() -> {
                     Picker.Result result = Picker.fromDocuments(this, selected);
                     handler.post(() -> mergeResult(result));
@@ -350,7 +350,7 @@ public final class SendActivity extends Activity {
             Uri tree = data.getData();
             if (tree == null) return;
             keepPermission(tree);
-            statusLine.setText("Читаем папку…");
+            statusLine.setText(L10n.s("send.reading.folder"));
             new Thread(() -> {
                 Picker.Result result = Picker.fromTree(this, tree);
                 handler.post(() -> mergeResult(result));
@@ -362,7 +362,7 @@ public final class SendActivity extends Activity {
             if (resultCode != RESULT_OK || data == null) return;
             String payload = data.getStringExtra(ScannerActivity.EXTRA_PAYLOAD);
             if (payload == null || payload.trim().isEmpty()) {
-                toast("QR-код не распознан. Введите адрес и код вручную.");
+                toast(L10n.s("send.qr.bad"));
                 return;
             }
             applyQr(payload.trim());
@@ -394,9 +394,9 @@ public final class SendActivity extends Activity {
             if (!folders.contains(folder)) folders.add(folder);
         }
 
-        String message = added == 0 ? "Новых файлов нет"
-                : "Добавлено файлов: " + added;
-        if (result.skipped > 0) message += " · пропущено: " + result.skipped;
+        String message = added == 0 ? L10n.s("send.merge.none")
+                : String.format(L10n.s("send.merge.added"), added);
+        if (result.skipped > 0) message += String.format(L10n.s("send.merge.skipped"), result.skipped);
         //noinspection SetTextI18n
         toast(message);
         updateSummary();
@@ -407,22 +407,23 @@ public final class SendActivity extends Activity {
         for (UploadTask.Item item : items) total += Math.max(0, item.size);
 
         if (items.isEmpty() && folders.isEmpty()) {
-            sourceSummary.setText("Ничего не выбрано");
-            statusLine.setText("Выберите файлы или папку");
+            sourceSummary.setText(L10n.s("send.none"));
+            statusLine.setText(L10n.s("send.status.pick"));
         } else if (items.isEmpty()) {
-            sourceSummary.setText("Пустых папок: " + folders.size());
-            statusLine.setText("Готово к отправке · только папки");
+            sourceSummary.setText(String.format(L10n.s("send.folders.empty"), folders.size()));
+            statusLine.setText(L10n.s("send.ready.folders"));
         } else {
-            sourceSummary.setText("Файлов: " + items.size() + " · " + Ui.formatBytes(total));
-            statusLine.setText("Готово к отправке · " + Ui.formatBytes(total));
+            sourceSummary.setText(String.format(
+                    L10n.s("send.files.count"), items.size(), Ui.formatBytes(total)));
+            statusLine.setText(String.format(L10n.s("send.ready.bytes"), Ui.formatBytes(total)));
         }
 
         rebuildPreview();
         if (mode == MODE_IDLE) {
             int count = items.size();
             primaryButton.setText(count == 0
-                    ? "Отправить пустые папки"
-                    : "Отправить · " + count);
+                    ? L10n.s("send.button.emptyFolders")
+                    : String.format(L10n.s("send.button.count"), count));
             primaryButton.setAlpha(items.isEmpty() && folders.isEmpty() ? 0.5f : 1f);
         }
     }
@@ -435,7 +436,8 @@ public final class SendActivity extends Activity {
             previewList.addView(previewRow(items.get(i)));
         }
         if (items.size() > limit) {
-            TextView more = Ui.text(this, "и ещё " + (items.size() - limit) + " файлов", 13,
+            TextView more = Ui.text(this,
+                    String.format(L10n.s("send.more.files"), items.size() - limit), 13,
                     Ui.FAINT, false);
             more.setPadding(0, Ui.dp(this, 8), 0, 0);
             previewList.addView(more);
@@ -463,7 +465,7 @@ public final class SendActivity extends Activity {
 
     private void discover() {
         discoverButton.setEnabled(false);
-        discoverButton.setText("Ищем устройства…");
+        discoverButton.setText(L10n.s("send.searching"));
         deviceList.removeAllViews();
 
         new Thread(() -> {
@@ -471,7 +473,7 @@ public final class SendActivity extends Activity {
             handler.post(() -> {
                 if (isFinishing()) return;
                 discoverButton.setEnabled(true);
-                discoverButton.setText("Найти рядом");
+                discoverButton.setText(L10n.s("send.find"));
                 showDevices(found);
             });
         }, "firedrop-discover").start();
@@ -480,12 +482,10 @@ public final class SendActivity extends Activity {
     private void showDevices(List<Net.Device> found) {
         deviceList.removeAllViews();
         if (found.isEmpty()) {
-            devicesHint.setText("Устройства не найдены. Проверьте, что оба подключены к одной "
-                    + "Wi-Fi сети (адрес компьютера — вида 192.168.x.x), выключите VPN и "
-                    + "мобильный интернет, затем введите адрес вручную.");
+            devicesHint.setText(L10n.s("send.notfound.hint"));
             return;
         }
-        devicesHint.setText("Нажмите на устройство, чтобы подставить адрес.");
+        devicesHint.setText(L10n.s("send.tap.device"));
         for (Net.Device device : found) {
             LinearLayout row = Ui.row(this);
             row.setPadding(Ui.dp(this, 4), Ui.dp(this, 12), Ui.dp(this, 4), Ui.dp(this, 12));
@@ -493,9 +493,9 @@ public final class SendActivity extends Activity {
             row.setOnClickListener(v -> {
                 hostInput.setText(device.host + ":" + device.port);
                 if ("phone".equals(device.kind)) {
-                    toast("Введите код, который показан на экране телефона");
+                    toast(L10n.s("send.pin.phone"));
                 } else {
-                    toast("Введите код, который показан на экране компьютера");
+                    toast(L10n.s("send.pin.pc"));
                 }
             });
 
@@ -505,7 +505,8 @@ public final class SendActivity extends Activity {
             row.addView(body, new LinearLayout.LayoutParams(0,
                     ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
-            row.addView(Ui.chip(this, "phone".equals(device.kind) ? "телефон" : "ПК"));
+            row.addView(Ui.chip(this, "phone".equals(device.kind)
+                    ? L10n.s("send.kind.phone") : L10n.s("send.kind.pc")));
             deviceList.addView(row);
         }
     }
@@ -517,7 +518,7 @@ public final class SendActivity extends Activity {
         try {
             startActivityForResult(new Intent(this, ScannerActivity.class), REQUEST_QR);
         } catch (Exception error) {
-            toast("Сканер недоступен. Введите адрес и код вручную.");
+            toast(L10n.s("send.scanner.unavailable"));
         }
     }
 
@@ -533,7 +534,7 @@ public final class SendActivity extends Activity {
                     token = "";
                     hostInput.setText(port == null ? host : host + ":" + port);
                     if (pin != null) pinInput.setText(pin);
-                    toast("Получатель подставлен. Выберите файлы.");
+                    toast(L10n.s("send.qr.applied"));
                     return;
                 }
             }
@@ -546,13 +547,13 @@ public final class SendActivity extends Activity {
                 if (tokenValue != null && !tokenValue.isEmpty()) {
                     token = tokenValue;
                     pinInput.setText("");
-                    toast("Ссылка с компьютера распознана. Код не нужен.");
+                    toast(L10n.s("send.link.applied"));
                 }
                 return;
             }
         } catch (Exception ignored) {
         }
-        toast("Это не QR-код FireDrop");
+        toast(L10n.s("send.qr.notfiredrop"));
     }
 
     // -------------------------------------------------------------- sending
@@ -571,7 +572,7 @@ public final class SendActivity extends Activity {
 
     private void startTransfer() {
         if (items.isEmpty() && folders.isEmpty()) {
-            toast("Сначала выберите файлы или папку");
+            toast(L10n.s("send.need.pick"));
             return;
         }
 
@@ -580,7 +581,7 @@ public final class SendActivity extends Activity {
                 .replace(" ", "").replace("-", "");
 
         if (hostValue.isEmpty()) {
-            toast("Укажите адрес компьютера или телефона");
+            toast(L10n.s("send.need.host"));
             return;
         }
 
@@ -609,7 +610,7 @@ public final class SendActivity extends Activity {
         }
 
         if (token.isEmpty() && !pinValue.matches("\\d{6}")) {
-            toast("Введите шестизначный код с экрана получателя");
+            toast(L10n.s("send.need.pin"));
             return;
         }
 
@@ -630,12 +631,12 @@ public final class SendActivity extends Activity {
         rows.clear();
         buildTransferRows();
 
-        primaryButton.setText("Отмена");
+        primaryButton.setText(L10n.s("send.cancel"));
         secondaryButton.setVisibility(View.GONE);
         lastSent = 0;
         lastTick = System.currentTimeMillis();
         speedEma = 0;
-        statusLine.setText("Подключение…");
+        statusLine.setText(L10n.s("send.connecting"));
         updateSummaryVisibility();
     }
 
@@ -671,8 +672,9 @@ public final class SendActivity extends Activity {
         }
 
         if (items.size() > limit) {
-            TextView more = Ui.text(this, "Показаны первые " + limit + " файлов из "
-                    + items.size(), 12, Ui.FAINT, false);
+            TextView more = Ui.text(this,
+                    String.format(L10n.s("send.rows.limit"), limit, items.size()), 12,
+                    Ui.FAINT, false);
             more.setPadding(0, Ui.dp(this, 10), 0, 0);
             transferList.addView(more);
         }
@@ -695,20 +697,22 @@ public final class SendActivity extends Activity {
 
             int percent = total <= 0 ? 0 : (int) Math.min(1000, sent * 1000 / total);
             overallBar.setProgress(percent);
-            transferTitle.setText("Передача · " + (percent / 10) + "%");
+            transferTitle.setText(String.format(L10n.s("send.progress.title"), percent / 10));
 
             StringBuilder meta = new StringBuilder();
-            meta.append(Ui.formatBytes(sent)).append(" из ").append(Ui.formatBytes(total));
+            meta.append(Ui.formatBytes(sent)).append(" ")
+                    .append(L10n.s("send.of")).append(" ")
+                    .append(Ui.formatBytes(total));
             if (speedEma > 1) meta.append(" · ").append(Ui.formatSpeed(speedEma));
             if (speedEma > 1 && total > sent) {
                 long seconds = (long) ((total - sent) / speedEma);
-                if (seconds < 3600) meta.append(" · осталось ").append(prettyDuration(seconds));
+                if (seconds < 3600) meta.append(String.format(L10n.s("send.ttl"), prettyDuration(seconds)));
             }
             transferMeta.setText(meta.toString());
 
             String target = task.targetName.isEmpty() ? "" : " → " + task.targetName;
-            transferStatus.setText("Файлов готово: " + task.completedFiles()
-                    + " из " + items.size() + target);
+            transferStatus.setText(String.format(
+                    L10n.s("send.done.count"), task.completedFiles(), items.size(), target));
 
             for (Row row : rows) {
                 if (row.item == null) continue;
@@ -719,17 +723,19 @@ public final class SendActivity extends Activity {
                 row.percent.setText((value / 10) + "%");
                 if (row.item.status == UploadTask.ERROR) {
                     row.state.setText(row.item.error == null || row.item.error.isEmpty()
-                            ? "ошибка" : row.item.error);
+                            ? L10n.s("send.state.error") : row.item.error);
                     row.state.setTextColor(Ui.DANGER);
                     row.bar.setProgress(1000);
                 } else if (row.item.status == UploadTask.DONE) {
-                    row.state.setText("готово · " + Ui.formatBytes(row.item.size));
+                    row.state.setText(String.format(
+                            L10n.s("send.state.done"), Ui.formatBytes(row.item.size)));
                     row.state.setTextColor(Ui.SUCCESS);
                 } else if (row.item.status == UploadTask.RUNNING) {
-                    row.state.setText(Ui.formatBytes(done) + " из " + Ui.formatBytes(row.item.size));
+                    row.state.setText(Ui.formatBytes(done) + " " + L10n.s("send.of")
+                            + " " + Ui.formatBytes(row.item.size));
                     row.state.setTextColor(Ui.FAINT);
                 } else {
-                    row.state.setText("в очереди");
+                    row.state.setText(L10n.s("send.state.queue"));
                     row.state.setTextColor(Ui.FAINT);
                 }
             }
@@ -749,25 +755,25 @@ public final class SendActivity extends Activity {
 
         overallBar.setProgress(1000);
         transferTitle.setText(task.failedFiles() == 0 && task.fatalError.isEmpty()
-                ? "Готово" : "Завершено с ошибками");
-        transferMeta.setText(Ui.formatBytes(total) + " за " + prettyDuration(seconds)
-                + " · " + Ui.formatSpeed(total / (double) seconds));
+                ? L10n.s("send.finished") : L10n.s("send.finished.errors"));
+        transferMeta.setText(String.format(L10n.s("send.meta.total"), Ui.formatBytes(total),
+                prettyDuration(seconds), Ui.formatSpeed(total / (double) seconds)));
 
         if (!task.fatalError.isEmpty()) {
             transferStatus.setText(task.fatalError);
             transferStatus.setTextColor(Ui.DANGER);
         } else if (task.failedFiles() > 0) {
-            transferStatus.setText("Не удалось отправить файлов: " + task.failedFiles());
+            transferStatus.setText(String.format(L10n.s("send.failed.count"), task.failedFiles()));
             transferStatus.setTextColor(Ui.DANGER);
         } else {
-            transferStatus.setText("Все файлы переданы. Получатель сохранил их в папку загрузок.");
+            transferStatus.setText(L10n.s("send.all.saved"));
             transferStatus.setTextColor(Ui.SUCCESS);
         }
 
-        primaryButton.setText("Готово");
+        primaryButton.setText(L10n.s("send.finished"));
         secondaryButton.setVisibility(View.VISIBLE);
         statusLine.setText(task.failedFiles() == 0 && task.fatalError.isEmpty()
-                ? "Передача завершена" : "Есть ошибки передачи");
+                ? L10n.s("send.status.done") : L10n.s("send.status.errors"));
         tone();
     }
 
@@ -786,19 +792,19 @@ public final class SendActivity extends Activity {
         overallBar.setProgress(0);
         transferStatus.setTextColor(Ui.MUTED);
         secondaryButton.setVisibility(View.GONE);
-        primaryButton.setText("Отправить");
+        primaryButton.setText(L10n.s("send.title"));
         updateSummary();
     }
 
     private void confirmCancel() {
         new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
-                .setTitle("Отменить передачу?")
-                .setMessage("Незавершённые файлы не будут сохранены.")
-                .setPositiveButton("Отменить передачу", (dialog, which) -> {
+                .setTitle(L10n.s("send.confirm.title"))
+                .setMessage(L10n.s("send.confirm.message"))
+                .setPositiveButton(L10n.s("send.confirm.cancel"), (dialog, which) -> {
                     if (task != null) task.cancel();
-                    statusLine.setText("Отмена…");
+                    statusLine.setText(L10n.s("send.cancelling"));
                 })
-                .setNegativeButton("Продолжить", null)
+                .setNegativeButton(L10n.s("send.confirm.continue"), null)
                 .show();
     }
 
@@ -817,15 +823,15 @@ public final class SendActivity extends Activity {
     }
 
     private void updateSummaryVisibility() {
-        statusLine.setText("Идёт передача… Не выключайте экран.");
+        statusLine.setText(L10n.s("send.running.hint"));
     }
 
     private static String prettyDuration(long seconds) {
-        if (seconds < 60) return seconds + " с";
+        if (seconds < 60) return String.format(L10n.s("send.dur.sec"), seconds);
         long minutes = seconds / 60;
         long rest = seconds % 60;
         if (minutes < 60) return String.format(Locale.US, "%d:%02d", minutes, rest);
-        return String.format(Locale.US, "%d ч %d мин", minutes / 60, minutes % 60);
+        return String.format(Locale.US, L10n.s("send.dur.hours"), minutes / 60, minutes % 60);
     }
 
     private void hideKeyboard() {

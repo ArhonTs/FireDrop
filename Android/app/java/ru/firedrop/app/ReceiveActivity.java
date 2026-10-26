@@ -63,8 +63,8 @@ public final class ReceiveActivity extends Activity {
     }
 
     private void build() {
-        screen = Ui.screen(this, "Принять", "Другое устройство отправит файлы на этот телефон",
-                "← Назад");
+        screen = Ui.screen(this, L10n.s("recv.title"), L10n.s("recv.subtitle"),
+                L10n.s("recv.back"));
         LinearLayout content = screen.content;
 
         LinearLayout card = Ui.card(this);
@@ -74,9 +74,9 @@ public final class ReceiveActivity extends Activity {
         card.setLayoutParams(params);
 
         LinearLayout head = Ui.row(this);
-        head.addView(Ui.text(this, "Код подключения", 16, Ui.MUTED, false),
+        head.addView(Ui.text(this, L10n.s("recv.pin_label"), 16, Ui.MUTED, false),
                 new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        statusChip = Ui.chip(this, "выключено");
+        statusChip = Ui.chip(this, L10n.s("recv.chip.off"));
         head.addView(statusChip);
         card.addView(head);
 
@@ -107,10 +107,7 @@ public final class ReceiveActivity extends Activity {
         qrView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         card.addView(qrView);
 
-        TextView hint = Ui.text(this,
-                "Откройте FireDrop на компьютере или телефоне, нажмите «Отправить» "
-                        + "и отсканируйте этот QR-код либо введите адрес и код вручную.",
-                13, Ui.MUTED, false);
+        TextView hint = Ui.text(this, L10n.s("recv.hint"), 13, Ui.MUTED, false);
         hint.setGravity(Gravity.CENTER);
         hint.setPadding(0, Ui.dp(this, 16), 0, 0);
         card.addView(hint);
@@ -120,8 +117,8 @@ public final class ReceiveActivity extends Activity {
         LinearLayout stats = Ui.card(this);
         stats.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        stats.addView(Ui.text(this, "Принято", 18, Ui.TEXT, true));
-        statsView = Ui.text(this, "Пока ничего не принято", 14, Ui.MUTED, false);
+        stats.addView(Ui.text(this, L10n.s("recv.stats.title"), 18, Ui.TEXT, true));
+        statsView = Ui.text(this, L10n.s("recv.stats.empty"), 14, Ui.MUTED, false);
         statsView.setPadding(0, Ui.dp(this, 6), 0, 0);
         stats.addView(statsView);
 
@@ -130,11 +127,11 @@ public final class ReceiveActivity extends Activity {
         stats.addView(transfers);
         content.addView(stats);
 
-        stopButton = Ui.button(this, "Остановить приём", false);
+        stopButton = Ui.button(this, L10n.s("recv.stop"), false);
         stopButton.setOnClickListener(v -> stopReceiving());
         screen.bottom.addView(stopButton);
 
-        folderButton = Ui.button(this, "Открыть папку «Загрузки»", false);
+        folderButton = Ui.button(this, L10n.s("recv.open_downloads"), false);
         LinearLayout.LayoutParams folderParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         folderParams.topMargin = Ui.dp(this, 10);
@@ -148,21 +145,21 @@ public final class ReceiveActivity extends Activity {
         boolean running = ReceiverService.isRunning() && server != null;
 
         if (!running) {
-            statusChip.setText("выключено");
+            statusChip.setText(L10n.s("recv.chip.off"));
             statusChip.setTextColor(Ui.MUTED);
             statusChip.setBackground(Ui.roundRect(0x1A7E99CD, 999, 0x337E99CD, this));
             pinView.setText("— — — — — —");
             pinView.setTextColor(Ui.FAINT);
-            addressView.setText("Приём остановлен");
+            addressView.setText(L10n.s("recv.stopped"));
             addressHint.setVisibility(View.GONE);
             qrView.setImageDrawable(null);
-            stopButton.setText("Включить приём");
+            stopButton.setText(L10n.s("recv.start"));
             stopButton.setOnClickListener(v -> startReceiving());
             lastQrPayload = "";
             return;
         }
 
-        statusChip.setText("включён");
+        statusChip.setText(L10n.s("recv.chip.on"));
         statusChip.setTextColor(Ui.SUCCESS);
         statusChip.setBackground(Ui.roundRect(0x2034D399, 999, 0x3334D399, this));
         pinView.setTextColor(Ui.ACCENT);
@@ -170,7 +167,7 @@ public final class ReceiveActivity extends Activity {
 
         String ip = server.address();
         if (ip.isEmpty()) {
-            addressView.setText("Нет подключения к Wi-Fi");
+            addressView.setText(L10n.s("recv.no_wifi"));
             addressView.setTextColor(Ui.DANGER);
             addressHint.setVisibility(View.GONE);
         } else {
@@ -179,22 +176,17 @@ public final class ReceiveActivity extends Activity {
                     + server.getDeviceName());
 
             if (Net.isVpnUp()) {
-                addressHint.setText("На телефоне включён VPN — он может уводить соединение "
-                        + "телефона с Wi-Fi. Если компьютер или другой телефон не "
-                        + "подключается, отключите VPN.");
+                addressHint.setText(L10n.s("recv.vpn_hint"));
                 addressHint.setVisibility(View.VISIBLE);
             } else if (!Net.isHomeLike(ip)) {
-                addressHint.setText("Адрес не из домашней подсети (обычно 192.168.x.x): "
-                        + "похоже, телефон в гостевой или другой Wi-Fi сети, в мобильном "
-                        + "интернете или под VPN. Компьютер из другой подсети сюда не "
-                        + "дозвонится — подключите телефон к той же Wi-Fi сети, что и он.");
+                addressHint.setText(L10n.s("recv.subnet_hint"));
                 addressHint.setVisibility(View.VISIBLE);
             } else {
                 addressHint.setVisibility(View.GONE);
             }
         }
 
-        stopButton.setText("Остановить приём");
+        stopButton.setText(L10n.s("recv.stop"));
         stopButton.setOnClickListener(v -> stopReceiving());
 
         String payload = "firedrop://send?host=" + ip + "&port=" + server.port()
@@ -213,14 +205,14 @@ public final class ReceiveActivity extends Activity {
         int count = server.completedCount();
         long bytes = server.completedBytes();
         if (count == 0) {
-            statsView.setText("Пока ничего не принято. Папка: Download/FireDrop");
+            statsView.setText(L10n.s("recv.stats.empty_folder"));
         } else {
-            statsView.setText("Файлов: " + count + " · " + Ui.formatBytes(bytes)
-                    + " · папка Download/FireDrop");
+            statsView.setText(String.format(L10n.s("recv.stats.count"), count,
+                    Ui.formatBytes(bytes)));
         }
 
         if (lastCompleted >= 0 && count > lastCompleted) {
-            Toast.makeText(this, "Получен новый файл", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, L10n.s("recv.toast_new_file"), Toast.LENGTH_SHORT).show();
         }
         lastCompleted = count;
 
@@ -251,8 +243,8 @@ public final class ReceiveActivity extends Activity {
             bar.setProgress(percent * 10);
             container.addView(bar);
 
-            TextView meta = Ui.text(this, Ui.formatBytes(done) + " из "
-                    + Ui.formatBytes(session.size), 11, Ui.FAINT, false);
+            TextView meta = Ui.text(this, String.format(L10n.s("recv.of"),
+                    Ui.formatBytes(done), Ui.formatBytes(session.size)), 11, Ui.FAINT, false);
             container.addView(meta);
 
             transfers.addView(container);
@@ -324,11 +316,9 @@ public final class ReceiveActivity extends Activity {
         }
 
         new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
-                .setTitle("Папка с файлами")
-                .setMessage("Откройте проводник или приложение «Файлы» и перейдите в:\n\n"
-                        + "Загрузки / Download → FireDrop\n\n"
-                        + "Вложенные папки сохраняются как на отправителе.")
-                .setPositiveButton("Понятно", null)
+                .setTitle(L10n.s("recv.folder_dialog.title"))
+                .setMessage(L10n.s("recv.folder_dialog.message"))
+                .setPositiveButton(L10n.s("recv.folder_dialog.ok"), null)
                 .show();
     }
 
@@ -343,6 +333,6 @@ public final class ReceiveActivity extends Activity {
     }
 
     private String formatSpeed(long bytesPerSecond) {
-        return String.format(Locale.US, "%.1f МБ/с", bytesPerSecond / 1048576.0);
+        return String.format(Locale.US, L10n.s("recv.speed"), bytesPerSecond / 1048576.0);
     }
 }

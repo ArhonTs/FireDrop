@@ -8,8 +8,8 @@ param(
     [string]$Jdk = $env:JAVA_HOME,
     [string]$BuildTools = "34.0.0",
     [string]$Platform = "android-34",
-    [string]$Version = "1.2.3",
-    [int]$VersionCode = 6,
+    [string]$Version = "1.2.4",
+    [int]$VersionCode = 7,
     [string]$OutDir = ""
 )
 

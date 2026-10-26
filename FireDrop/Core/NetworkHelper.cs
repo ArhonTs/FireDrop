@@ -11,7 +11,9 @@ public sealed record LanAddress(string Ip, string InterfaceName, string Descript
         get
         {
             var kind = IsWireless ? "Wi-Fi" : InterfaceName;
-            return IsVirtual ? $"{kind} (виртуальный) · {Ip}" : $"{kind} · {Ip}";
+            return IsVirtual
+                ? L10n.S("core.net.virtual", kind, Ip)
+                : L10n.S("core.net.display", kind, Ip);
         }
     }
 }

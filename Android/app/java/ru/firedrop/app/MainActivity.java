@@ -80,7 +80,7 @@ public final class MainActivity extends Activity {
     }
 
     private void build() {
-        screen = Ui.screen(this, "FireDrop", "Файлы и папки по Wi-Fi. Без интернета и облака.", null);
+        screen = Ui.screen(this, "FireDrop", L10n.s("main.subtitle"), null);
         LinearLayout content = screen.content;
 
         content.addView(sendCard());
@@ -97,15 +97,15 @@ public final class MainActivity extends Activity {
         card.setLayoutParams(params);
 
         LinearLayout head = Ui.row(this);
-        head.addView(Ui.text(this, "Отправить", 19, Ui.TEXT, true));
+        head.addView(Ui.text(this, L10n.s("main.send.title"), 19, Ui.TEXT, true));
         card.addView(head);
 
         TextView subtitle = Ui.text(this,
-                "Компьютер или другой телефон в этой же сети Wi-Fi", 14, Ui.MUTED, false);
+                L10n.s("main.send.subtitle"), 14, Ui.MUTED, false);
         subtitle.setPadding(0, Ui.dp(this, 6), 0, Ui.dp(this, 14));
         card.addView(subtitle);
 
-        TextView action = Ui.button(this, "Выбрать файлы или папку", true);
+        TextView action = Ui.button(this, L10n.s("main.send.pick"), true);
         action.setOnClickListener(v -> startActivity(new Intent(this, SendActivity.class)));
         card.addView(action);
         return card;
@@ -119,8 +119,8 @@ public final class MainActivity extends Activity {
         card.setLayoutParams(params);
 
         LinearLayout head = Ui.row(this);
-        head.addView(Ui.text(this, "Принять", 19, Ui.TEXT, true));
-        receiveChip = Ui.chip(this, "выключено");
+        head.addView(Ui.text(this, L10n.s("main.receive.title"), 19, Ui.TEXT, true));
+        receiveChip = Ui.chip(this, L10n.s("main.chip.off"));
         LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         chipParams.leftMargin = Ui.dp(this, 10);
@@ -129,12 +129,12 @@ public final class MainActivity extends Activity {
         card.addView(head);
 
         TextView subtitle = Ui.text(this,
-                "Другой телефон или компьютер отправит файлы прямо на этот аппарат",
+                L10n.s("main.receive.subtitle"),
                 14, Ui.MUTED, false);
         subtitle.setPadding(0, Ui.dp(this, 6), 0, Ui.dp(this, 14));
         card.addView(subtitle);
 
-        receiveButton = Ui.button(this, "Включить приём", false);
+        receiveButton = Ui.button(this, L10n.s("main.receive.enable"), false);
         receiveButton.setOnClickListener(v -> openReceive());
         card.addView(receiveButton);
         return card;
@@ -147,26 +147,26 @@ public final class MainActivity extends Activity {
         params.bottomMargin = Ui.dp(this, 14);
         card.setLayoutParams(params);
 
-        card.addView(Ui.text(this, "Настройки", 19, Ui.TEXT, true));
+        card.addView(Ui.text(this, L10n.s("main.settings.title"), 19, Ui.TEXT, true));
         Ui.gap(this, card, 8);
 
-        card.addView(settingRow("Имя устройства", prefs.deviceName(), v -> editDeviceName()));
+        card.addView(settingRow(L10n.s("main.settings.device"), prefs.deviceName(), v -> editDeviceName()));
         card.addView(divider());
-        card.addView(settingRow("Порт приёма", String.valueOf(prefs.port()), v -> editPort()));
+        card.addView(settingRow(L10n.s("main.settings.port"), String.valueOf(prefs.port()), v -> editPort()));
         card.addView(divider());
-        card.addView(settingRow("Папка приёма", "Download/FireDrop", v -> showFolderInfo()));
+        card.addView(settingRow(L10n.s("main.settings.folder"), "Download/FireDrop", v -> showFolderInfo()));
         return card;
     }
 
     private View aboutCard() {
         LinearLayout card = Ui.card(this);
-        card.addView(Ui.text(this, "Как это работает", 19, Ui.TEXT, true));
+        card.addView(Ui.text(this, L10n.s("main.how.title"), 19, Ui.TEXT, true));
         Ui.gap(this, card, 10);
 
         String[] steps = {
-                "1. Запустите FireDrop на компьютере или включите «Принять» на другом телефоне.",
-                "2. Нажмите «Отправить», найдите устройство и введите шестизначный код.",
-                "3. Выберите файлы или целую папку — структура папок сохранится.",
+                L10n.s("main.step1"),
+                L10n.s("main.step2"),
+                L10n.s("main.step3"),
         };
         for (String step : steps) {
             TextView line = Ui.text(this, step, 14, Ui.MUTED, false);
@@ -176,12 +176,12 @@ public final class MainActivity extends Activity {
 
         Ui.gap(this, card, 6);
         TextView footer = Ui.text(this,
-                "FireDrop " + App.VERSION + " · передача не выходит за пределы локальной сети",
+                String.format(L10n.s("main.footer"), App.VERSION),
                 12, Ui.FAINT, false);
         card.addView(footer);
 
         Ui.gap(this, card, 10);
-        TextView about = Ui.button(this, "О приложении", false);
+        TextView about = Ui.button(this, L10n.s("about.title"), false);
         about.setOnClickListener(v -> startActivity(new Intent(this, AboutActivity.class)));
         card.addView(about);
         return card;
@@ -200,7 +200,7 @@ public final class MainActivity extends Activity {
         TextView current = Ui.text(this, value, 15, Ui.MUTED, false);
         current.setGravity(Gravity.END);
         row.addView(current);
-        if (label.startsWith("Имя")) deviceValue = current;
+        if (L10n.s("main.settings.device").equals(label)) deviceValue = current;
         return row;
     }
 
@@ -215,15 +215,15 @@ public final class MainActivity extends Activity {
     private void refreshState() {
         boolean running = ReceiverService.isRunning();
         if (running) {
-            receiveChip.setText("включён");
+            receiveChip.setText(L10n.s("main.chip.on"));
             receiveChip.setTextColor(Ui.SUCCESS);
             receiveChip.setBackground(Ui.roundRect(0x2034D399, 999, 0x3334D399, this));
-            receiveButton.setText("Открыть экран приёма");
+            receiveButton.setText(L10n.s("main.receive.open"));
         } else {
-            receiveChip.setText("выключено");
+            receiveChip.setText(L10n.s("main.chip.off"));
             receiveChip.setTextColor(Ui.MUTED);
             receiveChip.setBackground(Ui.roundRect(0x1A7E99CD, 999, 0x337E99CD, this));
-            receiveButton.setText("Включить приём");
+            receiveButton.setText(L10n.s("main.receive.enable"));
         }
         if (deviceValue != null) deviceValue.setText(prefs.deviceName());
     }
@@ -262,7 +262,7 @@ public final class MainActivity extends Activity {
             openReceive();
         } else if (requestCode == 11) {
             Toast.makeText(this,
-                    "Без доступа к памяти принятые файлы не сохранятся в «Загрузки».",
+                    L10n.s("main.storage.denied"),
                     Toast.LENGTH_LONG).show();
         }
     }
@@ -280,23 +280,23 @@ public final class MainActivity extends Activity {
         input.setSingleLine(true);
         input.setTextColor(Ui.TEXT);
         input.setHintTextColor(Ui.FAINT);
-        input.setHint("Например: Телефон Ани");
+        input.setHint(L10n.s("main.device.hint"));
 
         new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
-                .setTitle("Имя устройства")
-                .setMessage("Так вас увидят другие устройства в сети.")
+                .setTitle(L10n.s("main.settings.device"))
+                .setMessage(L10n.s("main.device.message"))
                 .setView(input)
-                .setPositiveButton("Сохранить", (dialog, which) -> {
+                .setPositiveButton(L10n.s("main.save"), (dialog, which) -> {
                     String value = input.getText().toString().trim();
-                    if (value.isEmpty()) value = "Телефон";
+                    if (value.isEmpty()) value = L10n.s("disc.phone.default");
                     prefs.setDeviceName(value);
                     refreshState();
                     if (ReceiverService.isRunning()) {
-                        Toast.makeText(this, "Имя применится после повторного включения приёма",
+                        Toast.makeText(this, L10n.s("main.device.apply"),
                                 Toast.LENGTH_LONG).show();
                     }
                 })
-                .setNegativeButton("Отмена", null)
+                .setNegativeButton(L10n.s("main.cancel"), null)
                 .show();
     }
 
@@ -308,31 +308,29 @@ public final class MainActivity extends Activity {
         input.setSingleLine(true);
 
         new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
-                .setTitle("Порт приёма")
-                .setMessage("По умолчанию 47820. Меняйте только если порт занят.")
+                .setTitle(L10n.s("main.settings.port"))
+                .setMessage(L10n.s("main.port.message"))
                 .setView(input)
-                .setPositiveButton("Сохранить", (dialog, which) -> {
+                .setPositiveButton(L10n.s("main.save"), (dialog, which) -> {
                     try {
                         int port = Integer.parseInt(input.getText().toString().trim());
                         if (port < 1024 || port > 65535) throw new NumberFormatException();
                         prefs.setPort(port);
-                        Toast.makeText(this, "Порт сохранён. Перезапустите приём.",
+                        Toast.makeText(this, L10n.s("main.port.saved"),
                                 Toast.LENGTH_SHORT).show();
                     } catch (Exception error) {
-                        Toast.makeText(this, "Нужен порт от 1024 до 65535", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, L10n.s("main.port.invalid"), Toast.LENGTH_SHORT).show();
                     }
                 })
-                .setNegativeButton("Отмена", null)
+                .setNegativeButton(L10n.s("main.cancel"), null)
                 .show();
     }
 
     private void showFolderInfo() {
         new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
-                .setTitle("Папка приёма")
-                .setMessage("Принятые файлы сохраняются в общую папку «Загрузки»:\n\n"
-                        + "Download/FireDrop\n\nСтруктура вложенных папок сохраняется. "
-                        + "Файлы видны в любом проводнике и в галерее.")
-                .setPositiveButton("Понятно", null)
+                .setTitle(L10n.s("main.settings.folder"))
+                .setMessage(L10n.s("main.folder.message"))
+                .setPositiveButton(L10n.s("main.ok"), null)
                 .show();
     }
 }

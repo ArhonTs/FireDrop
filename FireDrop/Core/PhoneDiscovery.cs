@@ -13,7 +13,7 @@ namespace FireDrop.Core;
 /// </summary>
 public sealed record LanDevice(string Name, string Host, int Port, string Kind, string Version)
 {
-    public string KindText => Kind == "phone" ? "телефон" : "ПК";
+    public string KindText => Kind == "phone" ? L10n.Get("core.device.kind.phone") : L10n.Get("core.device.kind.pc");
     public string Endpoint => $"{Host}:{Port}";
 }
 

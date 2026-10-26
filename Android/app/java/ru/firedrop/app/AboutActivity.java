@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/** The "О приложении" page: what FireDrop is and where the author can be reached. */
+/** The "About" page: what FireDrop is and where the author can be reached. */
 public final class AboutActivity extends Activity {
 
     private static final String TELEGRAAM_URL = "https://t.me/LoioshS";
@@ -21,9 +21,9 @@ public final class AboutActivity extends Activity {
 
         LinearLayout content = Ui.screen(
                 this,
-                "О приложении",
-                "FireDrop " + App.VERSION,
-                "← Назад").content;
+                L10n.s("about.title"),
+                String.format(L10n.s("about.footer"), App.VERSION),
+                L10n.s("about.back")).content;
 
         content.addView(heroCard());
         content.addView(abilitiesCard());
@@ -37,12 +37,9 @@ public final class AboutActivity extends Activity {
         params.bottomMargin = Ui.dp(this, 14);
         card.setLayoutParams(params);
 
-        card.addView(Ui.text(this, "Что такое FireDrop", 18, Ui.TEXT, true));
+        card.addView(Ui.text(this, L10n.s("about.hero.title"), 18, Ui.TEXT, true));
         TextView body = Ui.text(this,
-                "FireDrop — быстрый обмен файлами и целыми папками по локальной Wi-Fi сети: "
-                        + "с компьютера на телефон, с телефона на компьютер и с телефона на телефон. "
-                        + "Работает без интернета, облака и регистрации — достаточно, чтобы устройства "
-                        + "были подключены к одной сети.",
+                L10n.s("about.hero.body"),
                 14, Ui.MUTED, false);
         body.setPadding(0, Ui.dp(this, 8), 0, 0);
         card.addView(body);
@@ -56,13 +53,13 @@ public final class AboutActivity extends Activity {
         params.bottomMargin = Ui.dp(this, 14);
         card.setLayoutParams(params);
 
-        card.addView(Ui.text(this, "Главное", 18, Ui.TEXT, true));
+        card.addView(Ui.text(this, L10n.s("about.facts.title"), 18, Ui.TEXT, true));
 
         String[] facts = {
-                "• Папки передаются целиком, структура вложенных каталогов сохраняется.",
-                "• Скорость ограничена только Wi-Fi сетью: без облака в пути.",
-                "• Подключение по QR-коду или шестизначному коду, данные не уходят в интернет.",
-                "• Принятые файлы не перезаписываются: рядом появляется «имя (1)», «имя (2)»…",
+                L10n.s("about.fact1"),
+                L10n.s("about.fact2"),
+                L10n.s("about.fact3"),
+                L10n.s("about.fact4"),
         };
         for (String fact : facts) {
             TextView line = Ui.text(this, fact, 14, Ui.MUTED, false);
@@ -78,16 +75,15 @@ public final class AboutActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         card.setLayoutParams(params);
 
-        card.addView(Ui.text(this, "Автор", 18, Ui.TEXT, true));
+        card.addView(Ui.text(this, L10n.s("about.author.title"), 18, Ui.TEXT, true));
 
         TextView body = Ui.text(this,
-                "Приложение сделал @LoioshS. Идеи, вопросы и сообщения о проблемах можно "
-                        + "присылать прямо в Telegram.",
+                L10n.s("about.author.body"),
                 14, Ui.MUTED, false);
         body.setPadding(0, Ui.dp(this, 8), 0, Ui.dp(this, 14));
         card.addView(body);
 
-        TextView open = Ui.button(this, "Написать автору · @LoioshS", true);
+        TextView open = Ui.button(this, L10n.s("about.author.button"), true);
         open.setOnClickListener(v -> openAuthor());
         card.addView(open);
         return card;
@@ -98,7 +94,7 @@ public final class AboutActivity extends Activity {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(TELEGRAAM_URL)));
         } catch (Exception error) {
             Toast.makeText(this,
-                    "Нет браузера или Telegram. Ссылка: t.me/LoioshS",
+                    L10n.s("about.author.fail"),
                     Toast.LENGTH_LONG).show();
         }
     }

@@ -16,7 +16,7 @@ public final class Prefs {
     public String deviceName() {
         String value = prefs.getString("deviceName", null);
         if (value == null || value.trim().isEmpty()) {
-            String model = Build.MODEL == null ? "Телефон" : Build.MODEL.trim();
+            String model = Build.MODEL == null ? L10n.s("disc.phone.default") : Build.MODEL.trim();
             return model;
         }
         return value;

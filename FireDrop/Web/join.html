@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#070b14">
   <meta name="color-scheme" content="dark">
   <meta name="robots" content="noindex">
-  <title>Подключение — FireDrop</title>
+  <title data-i18n="join.title">Подключение — FireDrop</title>
   <link rel="icon" href="/favicon-32.png" type="image/png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -28,7 +28,7 @@
       </span>
       <span class="brand-text">
         <strong>FireDrop</strong>
-        <small>Локальная передача файлов</small>
+        <small data-i18n="join.brandSub">Локальная передача файлов</small>
       </span>
     </a>
     <span class="wifi-pill">
@@ -43,12 +43,12 @@
       <div class="join-badge" aria-hidden="true">
         <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="3"/><path d="M8 10V8a4 4 0 0 1 8 0v2"/><circle cx="12" cy="15" r="1.2"/></svg>
       </div>
-      <div class="eyebrow"><span class="live-dot"></span> Защищённое подключение</div>
-      <h1>Введите код<br><span>с экрана компьютера</span></h1>
-      <p class="join-sub">Шестизначный код показан под QR-кодом в приложении FireDrop на ПК.</p>
+      <div class="eyebrow"><span class="live-dot"></span> <span data-i18n="join.eyebrow">Защищённое подключение</span></div>
+      <h1 data-i18n-html="join.heroTitle">Введите код<br><span>с экрана компьютера</span></h1>
+      <p class="join-sub" data-i18n="join.sub">Шестизначный код показан под QR-кодом в приложении FireDrop на ПК.</p>
 
       <form class="pin-form" id="joinForm" novalidate>
-        <label class="pin-label" for="pinInput">Код доступа</label>
+        <label class="pin-label" for="pinInput" data-i18n="join.codeLabel">Код доступа</label>
         <input
           class="pin-input"
           id="pinInput"
@@ -62,7 +62,7 @@
           aria-describedby="joinError"
           autofocus>
         <button class="primary-btn join-btn" id="joinBtn" type="submit">
-          <span id="joinBtnLabel">Подключиться</span>
+          <span id="joinBtnLabel" data-i18n="join.btn">Подключиться</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m0 0-5-5m5 5-5 5"/></svg>
         </button>
       </form>
@@ -71,14 +71,14 @@
 
       <div class="join-hint">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v3M17 20h4"/></svg>
-        Проще всего отсканировать QR-код камерой телефона — подключение произойдёт автоматически.
+        <span data-i18n="join.hint">Проще всего отсканировать QR-код камерой телефона — подключение произойдёт автоматически.</span>
       </div>
     </section>
   </main>
 
   <footer class="footer join-footer">
     <span class="footer-brand"><span class="footer-dot"></span> FireDrop</span>
-    <span>Только ваша локальная сеть</span>
+    <span data-i18n="join.footerLocal">Только ваша локальная сеть</span>
   </footer>
 
   <script src="/join.js" defer></script>

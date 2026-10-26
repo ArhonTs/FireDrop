@@ -100,13 +100,13 @@ public sealed class PhoneSender : IDisposable
                 else
                 {
                     item.State = FileError;
-                    item.Error = "файл не найден";
+                    item.Error = L10n.Get("core.send.filenotfound");
                 }
             }
             catch (Exception)
             {
                 item.State = FileError;
-                item.Error = "файл не читается";
+                item.Error = L10n.Get("core.send.filereadfailed");
             }
         }
 
@@ -213,18 +213,18 @@ public sealed class PhoneSender : IDisposable
         }
         catch (OperationCanceledException)
         {
-            return new HealthReply(false, "Устройство не отвечает", "");
+            return new HealthReply(false, L10n.Get("core.send.health.dead"), "");
         }
         catch (Exception)
         {
-            return new HealthReply(false, "Устройство не отвечает", "");
+            return new HealthReply(false, L10n.Get("core.send.health.dead"), "");
         }
 
         var body = await SafeBodyAsync(response, cancellation);
         var json = ParseObject(body);
         var app = json["app"]?.ToString();
         var ok = (int)response.StatusCode is >= 200 and < 300 && app == "FireDrop";
-        if (!ok) return new HealthReply(false, "Это не FireDrop", "");
+        if (!ok) return new HealthReply(false, L10n.Get("core.send.health.notfiredrop"), "");
         return new HealthReply(true, "", json["deviceName"]?.ToString() ?? "");
     }
 
@@ -305,17 +305,17 @@ public sealed class PhoneSender : IDisposable
                 {
                     item.State = Cancelled ? FileCancelled : FileError;
                     if (item.State == FileError && item.Error.Length == 0)
-                        item.Error = FatalError.Length > 0 ? FatalError : "передача прервана";
+                        item.Error = FatalError.Length > 0 ? FatalError : L10n.Get("core.send.interrupted");
                 }
             }
 
             if (Cancelled)
             {
-                FatalError = "Передача отменена";
+                FatalError = L10n.Get("core.upload.cancelled");
             }
             else if (FatalError.Length == 0 && FailedCount > 0)
             {
-                FatalError = $"Не удалось отправить файлов: {FailedCount}";
+                FatalError = L10n.S("core.send.failedcount", FailedCount);
             }
 
             FinishedAt = Environment.TickCount64;
@@ -340,7 +340,7 @@ public sealed class PhoneSender : IDisposable
             _cookie = $"{TransferServer.CookieName}={token}";
 
         if (_cookie.Length == 0)
-            throw new ProtocolError(0, "Получатель не подтвердил подключение. Проверьте код приёма.");
+            throw new ProtocolError(0, L10n.Get("core.send.join.notconfirmed"));
     }
 
     private async Task ReadInfoAsync(CancellationToken cancellation)
@@ -411,7 +411,7 @@ public sealed class PhoneSender : IDisposable
             item.UploadId = created["id"]?.ToString() ?? "";
 
             if (item.UploadId.Length == 0)
-                throw new ProtocolError(0, "Получатель не дал начать передачу файла");
+                throw new ProtocolError(0, L10n.Get("core.send.start.denied"));
 
             if (created["chunkSize"] is JsonValue chunkValue &&
                 chunkValue.TryGetValue<int>(out var chunk) && chunk is >= MinChunk and <= MaxChunk)
@@ -467,7 +467,7 @@ public sealed class PhoneSender : IDisposable
             }
         }
 
-        throw last ?? new ProtocolError(0, "Получатель не подтвердил сохранение файла");
+        throw last ?? new ProtocolError(0, L10n.Get("core.send.save.notconfirmed"));
     }
 
     private async Task UploadChunksAsync(Item item, int streams, CancellationToken cancellation)
@@ -545,12 +545,12 @@ public sealed class PhoneSender : IDisposable
         }
 
         // A swallowed failure here would silently leave a hole in the file.
-        throw last ?? new ProtocolError(0, "Не удалось отправить фрагмент файла");
+        throw last ?? new ProtocolError(0, L10n.Get("core.send.chunkfailed"));
     }
 
     private async Task PutChunkOnceAsync(Item item, long offset, int length, CancellationToken outer)
     {
-        var http = _http ?? throw new InvalidOperationException("Соединение закрыто");
+        var http = _http ?? throw new InvalidOperationException(L10n.Get("core.send.connectionclosed"));
         using var timeout = TimeoutToken(outer, 20_000, 150_000);
         using var request = new HttpRequestMessage(HttpMethod.Put,
             new Uri(BaseAddress(), $"/api/uploads/{item.UploadId}/chunk?offset={offset}"));
@@ -570,7 +570,7 @@ public sealed class PhoneSender : IDisposable
                 {
                     var read = await stream.ReadAsync(bytes.AsMemory(total, length - total), outer);
                     if (read <= 0)
-                        throw new ProtocolError(0, $"Файл изменился во время отправки: {item.Name}");
+                        throw new ProtocolError(0, L10n.S("core.send.filechanged", item.Name));
                     total += read;
                 }
             }
@@ -597,7 +597,7 @@ public sealed class PhoneSender : IDisposable
             var message = json["error"]?.ToString();
             throw new ProtocolError((int)response.StatusCode,
                 string.IsNullOrWhiteSpace(message)
-                    ? $"Ошибка передачи ({(int)response.StatusCode})"
+                    ? L10n.S("core.send.httperror", (int)response.StatusCode)
                     : message);
         }
     }
@@ -679,7 +679,7 @@ public sealed class PhoneSender : IDisposable
     private async Task<JsonObject> RequestAsync(HttpMethod method, string path, JsonObject? body,
         int connectMs, int readMs, CancellationToken cancellation)
     {
-        var http = _http ?? throw new InvalidOperationException("Соединение закрыто");
+        var http = _http ?? throw new InvalidOperationException(L10n.Get("core.send.connectionclosed"));
         using var request = new HttpRequestMessage(method, new Uri(BaseAddress(), path.TrimStart('/')));
         if (_cookie.Length > 0) request.Headers.TryAddWithoutValidation("Cookie", _cookie);
         if (body is not null)
@@ -720,7 +720,7 @@ public sealed class PhoneSender : IDisposable
         {
             var error = json["error"]?.ToString();
             throw new ProtocolError(status,
-                string.IsNullOrWhiteSpace(error) ? $"Ошибка сервера ({status})" : error);
+                string.IsNullOrWhiteSpace(error) ? L10n.S("core.send.servererror", status) : error);
         }
 
         return json;
@@ -731,7 +731,7 @@ public sealed class PhoneSender : IDisposable
         if (error is ProtocolError protocol && protocol.Message.Length > 0) return protocol.Message;
 
         if (error is TaskCanceledException or OperationCanceledException)
-            return "превышено время ожидания";
+            return L10n.Get("core.send.timeout");
 
         var text = string.IsNullOrEmpty(error.Message) ? error.GetType().Name : error.Message;
         if (error.InnerException is not null && !string.IsNullOrEmpty(error.InnerException.Message))
@@ -742,22 +742,22 @@ public sealed class PhoneSender : IDisposable
         if (text.Contains("no connection", StringComparison.OrdinalIgnoreCase) ||
             text.Contains("refused", StringComparison.OrdinalIgnoreCase))
         {
-            return "устройство не отвечает";
+            return L10n.Get("core.send.unreachable");
         }
         if (text.Contains("timed out", StringComparison.OrdinalIgnoreCase) ||
             text.Contains("timeout", StringComparison.OrdinalIgnoreCase))
         {
-            return "превышено время ожидания";
+            return L10n.Get("core.send.timeout");
         }
         if (text.Contains("host unreachable", StringComparison.OrdinalIgnoreCase) ||
             text.Contains("not reachable", StringComparison.OrdinalIgnoreCase))
         {
-            return "нет связи по локальной сети";
+            return L10n.Get("core.send.nonetwork");
         }
         if (text.Contains("name or service", StringComparison.OrdinalIgnoreCase) ||
             text.Contains("getaddrinfo", StringComparison.OrdinalIgnoreCase))
         {
-            return "адрес не найден в сети";
+            return L10n.Get("core.send.address.notfound");
         }
         return text.Length <= 120 ? text : text[..120] + "…";
     }

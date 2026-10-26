@@ -12,7 +12,8 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Answers FireDrop UDP discovery probes while the phone is receiving.
- * Mirrors FireDrop.Core.DiscoveryService, so "Найти рядом" lists phones as well as PCs.
+ * Mirrors FireDrop.Core.DiscoveryService, so the device list on the sender
+ * shows phones as well as PCs.
  */
 final class DiscoveryResponder {
     private static final String TAG = "FireDrop";
@@ -24,7 +25,7 @@ final class DiscoveryResponder {
     private Thread thread;
 
     DiscoveryResponder(String deviceName, int tcpPort) {
-        this.deviceName = deviceName == null || deviceName.isEmpty() ? "Телефон" : deviceName;
+        this.deviceName = deviceName == null || deviceName.isEmpty() ? L10n.s("disc.phone.default") : deviceName;
         this.tcpPort = tcpPort;
     }
 

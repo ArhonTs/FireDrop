@@ -113,9 +113,8 @@ public final class ScannerActivity extends Activity {
         if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
             startCamera();
         } else {
-            showProblem("Нужен доступ к камере",
-                    "Разрешите доступ к камере, чтобы навести камеру прямо на QR-код, "
-                            + "или снимите кадр системной камерой.");
+            showProblem(L10n.s("scan.permission.title"),
+                    L10n.s("scan.permission.message"));
         }
     }
 
@@ -131,12 +130,12 @@ public final class ScannerActivity extends Activity {
         top.setBackgroundColor(Ui.BG);
 
         LinearLayout titleBody = Ui.column(this);
-        titleBody.addView(Ui.text(this, "Сканирование QR-кода", 19, Ui.TEXT, true));
-        titleBody.addView(Ui.text(this, "Наведите камеру на код получателя", 12.5f, Ui.MUTED, false));
+        titleBody.addView(Ui.text(this, L10n.s("scan.title"), 19, Ui.TEXT, true));
+        titleBody.addView(Ui.text(this, L10n.s("scan.subtitle"), 12.5f, Ui.MUTED, false));
         top.addView(titleBody, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
-        TextView close = Ui.text(this, "Закрыть", 14, Ui.ACCENT, true);
+        TextView close = Ui.text(this, L10n.s("scan.close"), 14, Ui.ACCENT, true);
         close.setPadding(Ui.dp(this, 12), Ui.dp(this, 8), Ui.dp(this, 8), Ui.dp(this, 8));
         close.setClickable(true);
         close.setOnClickListener(v -> {
@@ -174,14 +173,14 @@ public final class ScannerActivity extends Activity {
         problemText.setPadding(0, Ui.dp(this, 8), 0, 0);
         problemCard.addView(problemText);
 
-        TextView photoButton = Ui.button(this, "Снять кадр для распознавания", false);
+        TextView photoButton = Ui.button(this, L10n.s("scan.photo_button"), false);
         photoButton.setOnClickListener(v -> startPhoto());
         LinearLayout.LayoutParams photoParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         photoParams.topMargin = Ui.dp(this, 18);
         problemCard.addView(photoButton, photoParams);
 
-        TextView retryButton = Ui.button(this, "Включить камеру заново", false);
+        TextView retryButton = Ui.button(this, L10n.s("scan.retry_button"), false);
         retryButton.setOnClickListener(v -> {
             problemCard.setVisibility(View.GONE);
             startCamera();
@@ -199,7 +198,7 @@ public final class ScannerActivity extends Activity {
         bottom.setOrientation(LinearLayout.VERTICAL);
         bottom.setPadding(Ui.dp(this, 22), Ui.dp(this, 16), Ui.dp(this, 22), Ui.dp(this, 22));
         bottom.setBackgroundColor(Ui.BG);
-        statusLine = Ui.text(this, "Наводите камеру прямо на QR-код…", 14, Ui.MUTED, false);
+        statusLine = Ui.text(this, L10n.s("scan.hint"), 14, Ui.MUTED, false);
         statusLine.setGravity(Gravity.CENTER);
         bottom.addView(statusLine);
         root.addView(bottom, new LinearLayout.LayoutParams(
@@ -241,9 +240,8 @@ public final class ScannerActivity extends Activity {
                 textureView.setSurfaceTextureListener(new SurfaceTextureListener());
             }
         } catch (Exception error) {
-            showProblem("Камера не доступна",
-                    "Не удалось подключиться к камере. Снимите кадр системной камерой "
-                            + "или введите адрес вручную.");
+            showProblem(L10n.s("scan.camera_unavailable_title"),
+                    L10n.s("scan.camera_unavailable_message"));
         }
     }
 
@@ -304,24 +302,23 @@ public final class ScannerActivity extends Activity {
                     try {
                         createSession(previewSurface);
                     } catch (Exception error) {
-                        cameraDisconnected("камера не смогла начать передачу");
+                        cameraDisconnected(L10n.s("scan.error.stream"));
                     }
                 }
 
                 @Override
                 public void onDisconnected(CameraDevice device) {
-                    cameraDisconnected("камера занята другим приложением");
+                    cameraDisconnected(L10n.s("scan.error.busy"));
                 }
 
                 @Override
                 public void onError(CameraDevice device, int error) {
-                    cameraDisconnected("ошибка камеры: " + error);
+                    cameraDisconnected(String.format(L10n.s("scan.error.code"), error));
                 }
             }, cameraHandler);
         } catch (Exception error) {
-            showProblem("Камера не доступна",
-                    "Не удалось подключиться к камере. Снимите кадр системной камерой "
-                            + "или введите адрес вручную.");
+            showProblem(L10n.s("scan.camera_unavailable_title"),
+                    L10n.s("scan.camera_unavailable_message"));
         }
     }
 
@@ -441,21 +438,21 @@ public final class ScannerActivity extends Activity {
                     configured.setRepeatingRequest(builder.build(), null, cameraHandler);
                     mainHandler.post(() -> {
                         if (!finishing) {
-                            showStatus("Наводите камеру прямо на QR-код…", Ui.SUCCESS);
+                            showStatus(L10n.s("scan.hint"), Ui.SUCCESS);
                         }
                     });
                 } catch (Exception error) {
-                    cameraDisconnected("камера не смогла начать передачу");
+                    cameraDisconnected(L10n.s("scan.error.stream"));
                 }
             }
 
             @Override
             public void onConfigureFailed(CameraCaptureSession sessionConfig) {
-                cameraDisconnected("камера не введена");
+                cameraDisconnected(L10n.s("scan.error.session"));
             }
         }, cameraHandler);
         } catch (CameraAccessException error) {
-            cameraDisconnected("камера не смогла начать передачу");
+            cameraDisconnected(L10n.s("scan.error.stream"));
         }
     }
 
@@ -465,8 +462,8 @@ public final class ScannerActivity extends Activity {
         stopCameraQuiet();
         mainHandler.post(() -> {
             if (finishing) return;
-            showProblem("Камера не отвечает",
-                    reason + ". Снимите кадр системной камерой или введите адрес вручную.");
+            showProblem(L10n.s("scan.unresponsive.title"),
+                    String.format(L10n.s("scan.unresponsive.message"), reason));
         });
     }
 
@@ -626,7 +623,7 @@ public final class ScannerActivity extends Activity {
             pendingPhoto = file;
             startActivityForResult(intent, REQUEST_PHOTO);
         } catch (Exception error) {
-            Toast.makeText(this, "Камера недоступна. Введите адрес и код вручную.",
+            Toast.makeText(this, L10n.s("scan.toast.unavailable"),
                     Toast.LENGTH_LONG).show();
         }
     }
@@ -639,7 +636,7 @@ public final class ScannerActivity extends Activity {
         pendingPhoto = null;
         if (resultCode != RESULT_OK || file == null || !file.exists()) return;
 
-        showStatus("Распознаём кадр…", Ui.MUTED);
+        showStatus(L10n.s("scan.recognizing"), Ui.MUTED);
         new Thread(() -> {
             String text = decodePhoto(file);
             mainHandler.post(() -> {
@@ -647,10 +644,8 @@ public final class ScannerActivity extends Activity {
                 if (text != null && !text.isEmpty()) {
                     deliver(text);
                 } else {
-                    showProblem("QR-код не распознан",
-                            "Кадр получился тёмным или размытым. Подсветите экран, держите"
-                                    + " камеру ровно и попробуйте ещё раз — либо введите адрес"
-                                    + " вручную.");
+                    showProblem(L10n.s("scan.not_recognized.title"),
+                            L10n.s("scan.not_recognized.message"));
                 }
             });
         }, "firedrop-photo").start();

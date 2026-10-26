@@ -171,12 +171,12 @@ public final class UploadTask {
             fatalError = error.getMessage();
         } catch (Exception error) {
             Log.w(TAG, "upload failed", error);
-            if (!cancelled) fatalError = "Не удалось завершить передачу: " + describe(error);
+            if (!cancelled) fatalError = String.format(L10n.s("upload.fail"), describe(error));
         } finally {
             if (cancelled) {
-                fatalError = "Передача отменена";
+                fatalError = L10n.s("upload.cancelled");
             } else if (fatalError.isEmpty() && failedFiles() > 0) {
-                fatalError = "Не удалось отправить файлов: " + failedFiles();
+                fatalError = String.format(L10n.s("upload.failed.count"), failedFiles());
             }
             for (Item item : items) {
                 if (item.status == QUEUED || item.status == RUNNING) {
@@ -254,7 +254,7 @@ public final class UploadTask {
 
             JSONObject created = http.json("POST", "/api/uploads", init, 15000, 30000);
             id = created.optString("id", "");
-            if (id.isEmpty()) throw new IOException("Сервер не выдал идентификатор передачи");
+            if (id.isEmpty()) throw new IOException(L10n.s("upload.no.id"));
 
             int serverChunk = created.optInt("chunkSize", chunkSize);
             if (serverChunk >= 256 * 1024 && serverChunk <= 64 * 1024 * 1024) chunkSize = serverChunk;
@@ -301,11 +301,11 @@ public final class UploadTask {
                     Thread.sleep(500L * attempt);
                 } catch (InterruptedException interrupted) {
                     Thread.currentThread().interrupt();
-                    throw new IOException("Передача отменена");
+                    throw new IOException(L10n.s("upload.cancelled"));
                 }
             }
         }
-        throw last == null ? new IOException("Сервер не подтвердил сохранение файла") : last;
+        throw last == null ? new IOException(L10n.s("upload.no.confirm")) : last;
     }
 
     private void uploadChunks(String id, Item item, int streams) throws Exception {
@@ -348,14 +348,14 @@ public final class UploadTask {
 
         for (Thread thread : threads) thread.join();
         if (failure[0] != null) throw failure[0];
-        if (!alive()) throw new IOException("Передача отменена");
+        if (!alive()) throw new IOException(L10n.s("upload.cancelled"));
     }
 
     private void putChunkWithRetry(String id, Item item, long offset, long length) throws IOException {
         int attempts = 3;
         IOException last = null;
         for (int attempt = 1; attempt <= attempts; attempt++) {
-            if (!alive()) throw new IOException("Передача отменена");
+            if (!alive()) throw new IOException(L10n.s("upload.cancelled"));
             try {
                 putChunk(id, item, offset, length);
                 return;
@@ -373,11 +373,11 @@ public final class UploadTask {
                     Thread.sleep(350L * attempt);
                 } catch (InterruptedException interrupted) {
                     Thread.currentThread().interrupt();
-                    throw new IOException("Передача отменена");
+                    throw new IOException(L10n.s("upload.cancelled"));
                 }
             }
         }
-        throw last == null ? new IOException("Часть файла не отправилась") : last;
+        throw last == null ? new IOException(L10n.s("upload.chunk.failed")) : last;
     }
 
     private void putChunk(String id, Item item, long offset, long length) throws IOException {
@@ -388,7 +388,7 @@ public final class UploadTask {
         try {
             http.put(path, (int) length, out -> {
                 ParcelFileDescriptor descriptor = resolver.openFileDescriptor(item.uri, "r");
-                if (descriptor == null) throw new IOException("Нет доступа к файлу " + item.name);
+                if (descriptor == null) throw new IOException(String.format(L10n.s("upload.no.access"), item.name));
                 holder[0] = descriptor;
 
                 FileInputStream stream = new FileInputStream(descriptor.getFileDescriptor());
@@ -442,11 +442,11 @@ public final class UploadTask {
         ByteBuffer buffer = ByteBuffer.allocate(128 * 1024);
         long left = length;
         while (left > 0) {
-            if (!alive()) throw new IOException("Передача отменена");
+            if (!alive()) throw new IOException(L10n.s("upload.cancelled"));
             buffer.clear();
             buffer.limit((int) Math.min(buffer.capacity(), left));
             int read = channel.read(buffer);
-            if (read <= 0) throw new IOException("Файл закончился раньше времени");
+            if (read <= 0) throw new IOException(L10n.s("upload.file.ended"));
             out.write(buffer.array(), 0, read);
             left -= read;
             written.addAndGet(read);
@@ -462,15 +462,15 @@ public final class UploadTask {
     private void transferStream(android.net.Uri uri, long offset, long length,
                                 OutputStream out, Item item, AtomicLong written) throws IOException {
         try (java.io.InputStream input = resolver.openInputStream(uri)) {
-            if (input == null) throw new IOException("Нет доступа к файлу " + item.name);
+            if (input == null) throw new IOException(String.format(L10n.s("upload.no.access"), item.name));
 
             long skip = offset;
             while (skip > 0) {
-                if (!alive()) throw new IOException("Передача отменена");
+                if (!alive()) throw new IOException(L10n.s("upload.cancelled"));
                 long skipped = input.skip(skip);
                 if (skipped <= 0) {
                     int single = input.read();
-                    if (single < 0) throw new IOException("Файл изменился во время передачи");
+                    if (single < 0) throw new IOException(L10n.s("upload.file.changed"));
                     skip--;
                 } else {
                     skip -= skipped;
@@ -480,9 +480,9 @@ public final class UploadTask {
             byte[] buffer = new byte[128 * 1024];
             long left = length;
             while (left > 0) {
-                if (!alive()) throw new IOException("Передача отменена");
+                if (!alive()) throw new IOException(L10n.s("upload.cancelled"));
                 int read = input.read(buffer, 0, (int) Math.min(buffer.length, left));
-                if (read <= 0) throw new IOException("Файл закончился раньше времени");
+                if (read <= 0) throw new IOException(L10n.s("upload.file.ended"));
                 out.write(buffer, 0, read);
                 left -= read;
                 written.addAndGet(read);
@@ -495,15 +495,15 @@ public final class UploadTask {
     private static String describe(Exception error) {
         if (error instanceof Http.HttpError) return error.getMessage();
         String message = error.getMessage();
-        if (message == null || message.isEmpty()) return "неизвестная ошибка";
+        if (message == null || message.isEmpty()) return L10n.s("upload.err.unknown");
         if (message.contains("ECONNREFUSED") || message.contains("Connection refused")) {
-            return "устройство не отвечает";
+            return L10n.s("upload.err.refused");
         }
         if (message.contains("timeout") || message.contains("timed out")) {
-            return "превышено время ожидания";
+            return L10n.s("upload.err.timeout");
         }
         if (message.contains("Network is unreachable") || message.contains("EHOSTUNREACH")) {
-            return "нет связи по локальной сети";
+            return L10n.s("upload.err.unreachable");
         }
         return message;
     }

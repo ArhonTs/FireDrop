@@ -45,7 +45,7 @@ public final class Picker {
             String rootId = DocumentsContract.getTreeDocumentId(treeUri);
             Uri rootDocument = DocumentsContract.buildDocumentUriUsingTree(treeUri, rootId);
             String rootName = queryName(resolver, rootDocument);
-            if (rootName == null || rootName.trim().isEmpty()) rootName = "Папка";
+            if (rootName == null || rootName.trim().isEmpty()) rootName = L10n.s("pick.folder.default");
             rootName = rootName.replace("/", "_").replace("\\", "_").trim();
             result.folders.add(rootName);
             walk(resolver, treeUri, rootId, rootName, result, 0);

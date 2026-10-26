@@ -41,11 +41,11 @@ public static class FirewallHelper
 
         var result = await RunPowerShellAsync(script, elevated: false, timeoutMs: 15_000);
         if (!result.Ok)
-            return new Status(false, "Не удалось проверить брандмауэр (недостаточно прав для чтения).");
+            return new Status(false, L10n.Get("core.firewall.check.failed"));
 
         return result.Output.Contains("allowed", StringComparison.CurrentCultureIgnoreCase)
-            ? new Status(true, "FireDrop уже разрешён в брандмауэре для этого пути и порта.")
-            : new Status(false, "Правила для FireDrop не найдены. Если другие устройства не подключаются — разрешите FireDrop в сети.");
+            ? new Status(true, L10n.Get("core.firewall.ok"))
+            : new Status(false, L10n.Get("core.firewall.missing"));
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public static class FirewallHelper
     {
         var exe = ExePath;
         if (exe.Length == 0)
-            return new Status(false, "Не удалось определить путь программы для правила.");
+            return new Status(false, L10n.Get("core.firewall.nopath"));
 
         var psEscaped = exe.Replace("'", "''");
         var script =
@@ -73,12 +73,12 @@ public static class FirewallHelper
 
         var result = await RunPowerShellAsync(script, elevated: true, timeoutMs: 90_000);
         if (result.TimedOut)
-            return new Status(false, "Windows ждала подтверждения UAC слишком долго. Нажмите ещё раз и подтвердите.");
+            return new Status(false, L10n.Get("core.firewall.uac.timeout"));
 
         if (!result.Ok)
-            return new Status(false, "Правила не удалось создать (нужно подтверждение администратора).");
+            return new Status(false, L10n.Get("core.firewall.create.failed"));
 
-        return new Status(true, "Готово: входящие подключения для FireDrop разрешены.");
+        return new Status(true, L10n.Get("core.firewall.created"));
     }
 
     private static async Task<(bool Ok, string Output, bool TimedOut)> RunPowerShellAsync(

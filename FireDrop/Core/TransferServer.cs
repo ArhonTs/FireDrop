@@ -68,7 +68,7 @@ public sealed class TransferServer
     public async Task StartAsync(int port)
     {
         if (_app is not null)
-            throw new InvalidOperationException("Сервер уже запущен.");
+            throw new InvalidOperationException(L10n.Get("core.server.alreadyrunning"));
 
         _port = port;
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
@@ -170,7 +170,7 @@ public sealed class TransferServer
             catch (Exception ex)
             {
                 AppLog.Error($"Необработанная ошибка HTTP {context.Request.Method} {context.Request.Path}", ex);
-                await WriteErrorAsync(context, 500, "Внутренняя ошибка сервера.");
+                await WriteErrorAsync(context, 500, L10n.Get("core.server.internal"));
             }
         });
 
@@ -196,7 +196,7 @@ public sealed class TransferServer
                 !path.Equals("/api/health", StringComparison.OrdinalIgnoreCase) &&
                 !IsAuthorized(context))
             {
-                await WriteErrorAsync(context, StatusCodes.Status401Unauthorized, "Требуется подключение к FireDrop.");
+                await WriteErrorAsync(context, StatusCodes.Status401Unauthorized, L10n.Get("core.server.unauthorized"));
                 return;
             }
 
@@ -257,7 +257,7 @@ public sealed class TransferServer
             if (_joinLimiter.IsBlocked(ip))
             {
                 return Results.Json(
-                    new { error = "Слишком много попыток. Подождите пару минут." },
+                    new { error = L10n.Get("core.server.join.ratelimited") },
                     statusCode: StatusCodes.Status429TooManyRequests);
             }
 
@@ -266,7 +266,7 @@ public sealed class TransferServer
             {
                 _joinLimiter.RegisterFailure(ip);
                 return Results.Json(
-                    new { error = "Неверный код. Проверьте цифры на экране компьютера." },
+                    new { error = L10n.Get("core.server.join.badpin") },
                     statusCode: StatusCodes.Status401Unauthorized);
             }
 
@@ -279,7 +279,7 @@ public sealed class TransferServer
         app.MapPost("/api/uploads", (HttpContext context, UploadInitRequest request) =>
         {
             if (request.Size < 0)
-                throw new UploadException(400, "Некорректный размер файла.");
+                throw new UploadException(400, L10n.Get("core.upload.badsize"));
 
             var info = _uploads.Create(
                 request.Name,
@@ -303,11 +303,11 @@ public sealed class TransferServer
         app.MapPut("/api/uploads/{id}/chunk", async (HttpContext context, string id) =>
         {
             if (!long.TryParse(context.Request.Query["offset"].ToString(), out var offset) || offset < 0)
-                throw new UploadException(400, "Не указано смещение части файла.");
+                throw new UploadException(400, L10n.Get("core.upload.nooffset"));
 
             var contentLength = context.Request.ContentLength;
             if (contentLength is null)
-                throw new UploadException(411, "Не указан размер части файла.");
+                throw new UploadException(411, L10n.Get("core.upload.nolength"));
 
             await _uploads.WriteChunkAsync(
                 id,
@@ -337,7 +337,7 @@ public sealed class TransferServer
 
         app.MapDelete("/api/uploads/{id}", async (string id) =>
         {
-            await _uploads.AbortAsync(id, "Отменено с телефона");
+            await _uploads.AbortAsync(id, L10n.Get("core.upload.cancelledbyphone"));
             return Results.NoContent();
         });
 

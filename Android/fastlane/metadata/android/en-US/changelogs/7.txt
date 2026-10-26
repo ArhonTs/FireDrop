@@ -1,0 +1,1 @@
+Every app screen and the built-in web page now speak two languages: Russian and English are picked automatically from the system language (Android, Windows and the phone browser). Firewall rules and error messages are bilingual as well.

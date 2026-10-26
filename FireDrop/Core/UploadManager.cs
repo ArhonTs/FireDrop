@@ -81,7 +81,7 @@ public sealed class UploadManager : IAsyncDisposable
         string? relativePath = null)
     {
         if (size < 0)
-            throw new UploadException(400, "Некорректный размер файла.");
+            throw new UploadException(400, L10n.Get("core.upload.badsize"));
 
         var safeName = SanitizeFileName(originalName);
         var directories = SanitizeRelativePath(relativePath);
@@ -139,7 +139,7 @@ public sealed class UploadManager : IAsyncDisposable
             lock (_gate) _reservedPaths.Remove(finalPath);
             TryDelete(tempPath);
             AppLog.Error($"Не удалось создать приёмник файла {displayName}", ex);
-            throw new UploadException(500, "Не удалось создать файл на диске. Проверьте папку сохранения.");
+            throw new UploadException(500, L10n.Get("core.upload.create.failed"));
         }
     }
 
@@ -151,12 +151,12 @@ public sealed class UploadManager : IAsyncDisposable
         CancellationToken cancellationToken)
     {
         var session = GetSession(id);
-        if (session.Aborted) throw new UploadException(410, "Передача отменена.");
-        if (session.Completed) throw new UploadException(409, "Файл уже принят.");
+        if (session.Aborted) throw new UploadException(410, L10n.Get("core.upload.aborted"));
+        if (session.Completed) throw new UploadException(409, L10n.Get("core.upload.alreadydone"));
 
         var expectedLength = GetExpectedChunkLength(session.Size, offset);
         if (expectedLength < 0 || declaredLength != expectedLength)
-            throw new UploadException(400, "Некорректный размер части файла.");
+            throw new UploadException(400, L10n.Get("core.upload.badchunksize"));
 
         if (session.Chunks.ContainsKey(offset))
         {
@@ -190,7 +190,7 @@ public sealed class UploadManager : IAsyncDisposable
         }
 
         if (written != expectedLength)
-            throw new UploadException(400, "Часть файла пришла не полностью.");
+            throw new UploadException(400, L10n.Get("core.upload.chunkincomplete"));
 
         if (session.Chunks.TryAdd(offset, expectedLength))
         {
@@ -216,7 +216,7 @@ public sealed class UploadManager : IAsyncDisposable
         {
             if (session.Completed && session.Result is not null)
                 return session.Result;
-            if (session.Aborted) throw new UploadException(410, "Передача отменена.");
+            if (session.Aborted) throw new UploadException(410, L10n.Get("core.upload.aborted"));
 
             var expectedChunks = session.Size == 0 ? 0 : (session.Size + ChunkSize - 1) / ChunkSize;
             var received = Interlocked.Read(ref session.ReceivedBytes);
@@ -228,7 +228,7 @@ public sealed class UploadManager : IAsyncDisposable
             {
                 var missing = Math.Max(0, expectedChunks - session.Chunks.Count);
                 throw new UploadException(409,
-                    $"Передача ещё не завершена (не хватает частей: {missing}).");
+                    L10n.S("core.upload.incomplete", missing));
             }
 
             try
@@ -239,8 +239,8 @@ public sealed class UploadManager : IAsyncDisposable
             catch (Exception ex)
             {
                 AppLog.Error("Ошибка сброса файла на диск", ex);
-                await FailAsync(session, "Не удалось сохранить файл на диск.");
-                throw new UploadException(500, "Не удалось сохранить файл на диск.");
+                await FailAsync(session, L10n.Get("core.upload.save.failed"));
+                throw new UploadException(500, L10n.Get("core.upload.save.failed"));
             }
 
             string finalPath;
@@ -277,8 +277,8 @@ public sealed class UploadManager : IAsyncDisposable
                 catch (Exception ex)
                 {
                     AppLog.Error("Не удалось переименовать принятый файл", ex);
-                    await FailAsync(session, "Не удалось сохранить файл в папке назначения.");
-                    throw new UploadException(500, "Не удалось сохранить файл в папке назначения.");
+                    await FailAsync(session, L10n.Get("core.upload.rename.failed"));
+                    throw new UploadException(500, L10n.Get("core.upload.rename.failed"));
                 }
             }
 
@@ -326,8 +326,12 @@ public sealed class UploadManager : IAsyncDisposable
         }
     }
 
-    public async Task AbortAsync(string id, string reason = "Передача отменена")
+    public async Task AbortAsync(string id, string reason = "")
     {
+        // Default parameter values must be constants; resolve the user-facing
+        // reason string here so FileFailed still reports the original wording.
+        if (reason.Length == 0) reason = L10n.Get("core.upload.cancelled");
+
         UploadSession? session;
         lock (_gate)
         {
@@ -374,7 +378,7 @@ public sealed class UploadManager : IAsyncDisposable
         }
 
         if (session is null)
-            throw new UploadException(404, "Передача не найдена.");
+            throw new UploadException(404, L10n.Get("core.upload.notfound"));
         return session;
     }
 
@@ -391,7 +395,7 @@ public sealed class UploadManager : IAsyncDisposable
             }
 
             foreach (var session in stale)
-                _ = AbortAsync(session.Id, "Истекло время ожидания");
+                _ = AbortAsync(session.Id, L10n.Get("core.upload.timeout"));
         }
         catch (Exception ex)
         {
@@ -435,7 +439,8 @@ public sealed class UploadManager : IAsyncDisposable
             if (string.IsNullOrEmpty(root)) return;
             var drive = new DriveInfo(root);
             if (drive.IsReady && drive.AvailableFreeSpace < size + MinimumFreeSpace)
-                throw new UploadException(507, $"На диске недостаточно места. Свободно {FormatBytes(drive.AvailableFreeSpace)}.");
+                throw new UploadException(507,
+                    L10n.S("core.upload.nospace", FormatBytes(drive.AvailableFreeSpace)));
         }
         catch (UploadException)
         {
@@ -451,7 +456,7 @@ public sealed class UploadManager : IAsyncDisposable
     {
         var directories = SanitizeRelativePath(relativePath);
         if (directories.Length == 0)
-            throw new UploadException(400, "Не указан путь папки.");
+            throw new UploadException(400, L10n.Get("core.upload.nofolder"));
 
         string folder;
         lock (_gate) folder = _saveFolder;
@@ -465,7 +470,7 @@ public sealed class UploadManager : IAsyncDisposable
         catch (Exception ex)
         {
             AppLog.Error("Не удалось создать папку назначения", ex);
-            throw new UploadException(500, "Не удалось создать папку в папке сохранения.");
+            throw new UploadException(500, L10n.Get("core.upload.foldercreate.failed"));
         }
     }
 
@@ -622,7 +627,14 @@ public sealed class UploadManager : IAsyncDisposable
 
     public static string FormatBytes(long bytes)
     {
-        string[] units = { "Б", "КБ", "МБ", "ГБ", "ТБ" };
+        string[] units =
+        {
+            L10n.Get("core.bytes.b"),
+            L10n.Get("core.bytes.kb"),
+            L10n.Get("core.bytes.mb"),
+            L10n.Get("core.bytes.gb"),
+            L10n.Get("core.bytes.tb"),
+        };
         double value = bytes;
         var unit = 0;
         while (value >= 1024 && unit < units.Length - 1)

@@ -11,7 +11,7 @@
     <RootNamespace>FireDrop</RootNamespace>
     <ApplicationIcon>Assets\FireDrop.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <Product>FireDrop</Product>
     <Company>FireDrop</Company>
     <Description>Быстрая передача файлов с телефона на ПК по локальному Wi-Fi</Description>
