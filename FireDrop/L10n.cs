@@ -11,10 +11,28 @@ namespace FireDrop;
 /// </summary>
 public static class L10n
 {
-    private static readonly bool Ru =
-        CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru";
+    private static bool _ru = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru";
+    private static string _preference = "auto";
 
-    public static bool IsRu => Ru;
+    public static bool IsRu => _ru;
+
+    /// <summary>Language preference: "auto", "ru" or "en".</summary>
+    public static string Preference => _preference;
+
+    /// <summary>
+    /// Applies the saved language preference. Must run before any window is
+    /// loaded: XAML strings are resolved when the window is built.
+    /// </summary>
+    public static void Configure(string? preference)
+    {
+        _preference = string.IsNullOrWhiteSpace(preference) ? "auto" : preference;
+        _ru = _preference switch
+        {
+            "ru" => true,
+            "en" => false,
+            _ => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru",
+        };
+    }
 
     public static string Get(string key)
     {

@@ -5,7 +5,7 @@
 Russian documentation: [README.md](README.md)
 
 Source code: https://github.com/ArhonTs/FireDrop — licensed under the GNU GPL v3.
-The app UI and the web page come in Russian and English, selected automatically from the system language.
+The app UI and the web page come in Russian and English. They follow the system language by default, and the settings let you pick it explicitly: **System**, **Russian** or **English**.
 
 ## Features
 
@@ -65,9 +65,9 @@ Received files go to `Download/FireDrop`, folder structure is preserved. On Andr
 
 ## Settings
 
-**Windows** (slider button): computer name, save folder, port (default `47820`), autostart, minimize to tray. Stored in `%APPDATA%\FireDrop\settings.json`.
+**Windows** (slider button): computer name, save folder, port (default `47820`), language, autostart, minimize to tray. Stored in `%APPDATA%\FireDrop\settings.json`.
 
-**Android**: device name, receive port, receive folder (`Download/FireDrop`, fixed).
+**Android**: device name, receive port, receive folder (`Download/FireDrop`, fixed), language.
 
 **Firewall**: rules are bound to the exact `FireDrop.exe` path — after updating into a new folder press **Allow FireDrop on the network** in the settings (recreates both TCP 47820 and UDP 47822 for the current path and port). Manual, PowerShell as administrator:
 

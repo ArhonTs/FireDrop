@@ -46,6 +46,15 @@ public final class Prefs {
         return prefs.getString("lastPin", "");
     }
 
+    /** Language preference: "auto" (system), "ru" or "en". */
+    public String language() {
+        return prefs.getString("language", "auto");
+    }
+
+    public void setLanguage(String value) {
+        prefs.edit().putString("language", value == null ? "auto" : value).apply();
+    }
+
     public void setLastTarget(String host, int port) {
         prefs.edit().putString("lastHost", host).putInt("lastPort", port).apply();
     }

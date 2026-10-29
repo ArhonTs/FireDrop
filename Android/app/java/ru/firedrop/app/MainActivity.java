@@ -155,7 +155,16 @@ public final class MainActivity extends Activity {
         card.addView(settingRow(L10n.s("main.settings.port"), String.valueOf(prefs.port()), v -> editPort()));
         card.addView(divider());
         card.addView(settingRow(L10n.s("main.settings.folder"), "Download/FireDrop", v -> showFolderInfo()));
+        card.addView(divider());
+        card.addView(settingRow(L10n.s("main.settings.language"), languageLabel(), v -> editLanguage()));
         return card;
+    }
+
+    private String languageLabel() {
+        String code = prefs.language();
+        if ("ru".equals(code)) return L10n.s("lang.ru");
+        if ("en".equals(code)) return L10n.s("lang.en");
+        return L10n.s("lang.auto");
     }
 
     private View aboutCard() {
@@ -326,8 +335,38 @@ public final class MainActivity extends Activity {
                 .show();
     }
 
-    private void showFolderInfo() {
+    private void editLanguage() {
+        String current = prefs.language();
+        String[] values = {"auto", "ru", "en"};
+        String[] items = {L10n.s("lang.auto"), "Русский", "English"};
+        int checked = 0;
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].equals(current)) checked = i;
+        }
+
         new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
+                .setTitle(L10n.s("main.settings.language"))
+                .setSingleChoiceItems(items, checked, (dialog, which) -> {
+                    dialog.dismiss();
+                    String code = values[which];
+                    if (code.equals(prefs.language())) return;
+                    prefs.setLanguage(code);
+                    L10n.configure(code);
+                    restartApp();
+                })
+                .setNegativeButton(L10n.s("main.cancel"), null)
+                .show();
+    }
+
+    /** Rebuilds the whole activity stack so every screen picks up the new language. */
+    private void restartApp() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void showFolderInfo() {        new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
                 .setTitle(L10n.s("main.settings.folder"))
                 .setMessage(L10n.s("main.folder.message"))
                 .setPositiveButton(L10n.s("main.ok"), null)

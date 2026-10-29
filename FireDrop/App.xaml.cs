@@ -34,6 +34,7 @@ public partial class App : Application
         try
         {
             var settings = AppSettings.Load();
+            L10n.Configure(settings.Language);
             _mainWindow = new MainWindow(settings);
             MainWindow = _mainWindow;
 

@@ -23,7 +23,8 @@ Description: |-
     nothing is uploaded anywhere in between.
   - Connection by scanning a QR code or by a six-digit code with limited attempts.
   - Incoming files are never overwritten: duplicates get number-suffixed names.
-  - Russian and English interface, selected automatically by the device language.
+  - Russian and English interface; it follows the device language and can be
+    switched manually in the settings.
 
   The traffic is plain HTTP inside the local network only: the app serves and
   connects to explicit IP:port addresses the user sees on screen (a VPN must be
@@ -35,6 +36,13 @@ RepoType: git
 Repo: https://github.com/ArhonTs/FireDrop.git
 
 Builds:
+- versionName: '1.2.5'
+  versionCode: 8
+  commit: v1.2.5
+  output: Android/build/FireDrop-unsigned.apk
+  build: |-
+    bash Android/fdroid-build.sh
+
 - versionName: '1.2.4'
   versionCode: 7
   commit: v1.2.4
@@ -51,5 +59,5 @@ Builds:
 
 AutoUpdateMode: Version v%v
 UpdateCheckMode: Tags ^v[\d.]+$
-CurrentVersion: 1.2.4
-CurrentVersionCode: 7
+CurrentVersion: 1.2.5
+CurrentVersionCode: 8

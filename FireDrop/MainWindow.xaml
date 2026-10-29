@@ -721,6 +721,22 @@
                                     </StackPanel>
                                 </Grid>
 
+                                <TextBlock Text="{local:T ui.section.language}" Style="{StaticResource SectionLabelStyle}"
+                                           FontSize="9" Margin="0,18,0,0" />
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                    <Button x:Name="LanguageAutoButton" Content="{local:T ui.language.auto}"
+                                            Style="{StaticResource SecondaryButtonStyle}" Height="34" Padding="14,0"
+                                            Tag="auto" Click="LanguageButton_Click" />
+                                    <Button x:Name="LanguageRuButton" Content="{local:T ui.language.ru}"
+                                            Style="{StaticResource SecondaryButtonStyle}" Height="34" Padding="14,0"
+                                            Margin="8,0,0,0" Tag="ru" Click="LanguageButton_Click" />
+                                    <Button x:Name="LanguageEnButton" Content="{local:T ui.language.en}"
+                                            Style="{StaticResource SecondaryButtonStyle}" Height="34" Padding="14,0"
+                                            Margin="8,0,0,0" Tag="en" Click="LanguageButton_Click" />
+                                </StackPanel>
+                                <TextBlock Text="{local:T ui.language.hint}"
+                                           Style="{StaticResource SmallMutedStyle}" Margin="0,5,0,0" />
+
                                 <CheckBox x:Name="AutostartCheck" Style="{StaticResource CheckBoxStyle}" Margin="0,20,0,0"
                                           AutomationProperties.Name="{local:T ui.autostart.label}">
                                     <StackPanel>

@@ -1,0 +1,1 @@
+A language picker is now available in the settings: "System", "Russian" or "English". The app restarts its UI with the chosen language immediately; the default follows the system language. On the computer the language is chosen in the settings and takes effect after a restart.

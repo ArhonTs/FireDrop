@@ -54,6 +54,7 @@ public partial class MainWindow : Window
     private bool _forceExit;
     private bool _settingsVisible;
     private bool _savingSettings;
+    private string _languageChoice = "auto";
     private bool _trayHintShown;
 
     private bool _sendVisible;
@@ -660,9 +661,65 @@ public partial class MainWindow : Window
         OpenSettings(focusFolder: false);
     }
 
-    private void OpenSettings(bool focusFolder)
+    private void LanguageButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_settingsVisible) return;
+        if (sender is not Button button || button.Tag is not string code) return;
+        _languageChoice = code;
+        UpdateLanguageButtons();
+    }
+
+    private void UpdateLanguageButtons()
+    {
+        SetLanguageButton(LanguageAutoButton, _languageChoice == "auto");
+        SetLanguageButton(LanguageRuButton, _languageChoice == "ru");
+        SetLanguageButton(LanguageEnButton, _languageChoice == "en");
+    }
+
+    private void SetLanguageButton(Button button, bool active)
+    {
+        button.Style = (Style)FindResource(active ? "PrimaryButtonStyle" : "SecondaryButtonStyle");
+    }
+
+    private void PromptLanguageRestart()
+    {
+        var result = MessageBox.Show(
+            L10n.Get("ui.language.restart.question"),
+            "FireDrop",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Yes)
+            RestartForLanguage();
+    }
+
+    private void RestartForLanguage()
+    {
+        var executable = Environment.ProcessPath;
+        if (!string.IsNullOrWhiteSpace(executable))
+        {
+            try
+            {
+                // The new instance waits for this one to release the single-instance mutex.
+                Process.Start(new ProcessStartInfo(
+                    "cmd.exe",
+                    $"/c ping 127.0.0.1 -n 2 >nul & start \"\" \"{executable}\"")
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                });
+            }
+            catch (Exception ex)
+            {
+                AppLog.Error("Не удалось перезапустить FireDrop", ex);
+            }
+        }
+
+        _forceExit = true;
+        Close();
+    }
+
+    private void OpenSettings(bool focusFolder)
+    {        if (_settingsVisible) return;
 
         _settingsVisible = true;
         _settingsReturnFocus = Keyboard.FocusedElement;
@@ -674,6 +731,8 @@ public partial class MainWindow : Window
             : L10n.Get("ui.port.stopped");
         AutostartCheck.IsChecked = _settings.StartWithWindows;
         TrayCheck.IsChecked = _settings.MinimizeToTrayOnClose;
+        _languageChoice = _settings.Language;
+        UpdateLanguageButtons();
         HideSettingsError();
 
         TitleBar.IsEnabled = false;
@@ -849,6 +908,8 @@ public partial class MainWindow : Window
             _settings.SaveFolder = folder;
             _settings.StartWithWindows = AutostartCheck.IsChecked == true;
             _settings.MinimizeToTrayOnClose = TrayCheck.IsChecked == true;
+            var languageChanged = !string.Equals(_settings.Language, _languageChoice, StringComparison.Ordinal);
+            _settings.Language = _languageChoice;
             _settings.Save();
 
             _uploads.SetSaveFolder(folder);
@@ -863,6 +924,9 @@ public partial class MainWindow : Window
                 ResetConnectionStatus();
 
             ShowToast(L10n.Get("ui.toast.saved"), ToastKind.Success);
+
+            if (languageChanged)
+                PromptLanguageRestart();
         }
         catch (Exception ex)
         {

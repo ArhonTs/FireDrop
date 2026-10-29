@@ -21,6 +21,9 @@ public sealed class AppSettings
     public bool StartWithWindows { get; set; }
     public bool MinimizeToTrayOnClose { get; set; }
 
+    // "auto" (system language), "ru" or "en".
+    public string Language { get; set; } = "auto";
+
     private static string SettingsPath => Path.Combine(AppPaths.DataDirectory, "settings.json");
 
     public static AppSettings Load()
@@ -46,6 +49,9 @@ public sealed class AppSettings
 
         if (string.IsNullOrWhiteSpace(settings.DeviceName))
             settings.DeviceName = Environment.MachineName;
+
+        if (settings.Language is not ("auto" or "ru" or "en"))
+            settings.Language = "auto";
 
         try { Directory.CreateDirectory(settings.SaveFolder); }
         catch { settings.SaveFolder = AppPaths.DataDirectory; }

@@ -1,4 +1,4 @@
-# Release smoke test for FireDrop 1.2.4.
+# Release smoke test for FireDrop 1.2.5.
 # Starts the published EXE, reads the PIN from the UI automation tree, then exercises
 # the real HTTP API and UDP discovery. ASCII-only source: Cyrillic test names are
 # built from code points so Windows PowerShell 5.1 cannot mangle them.
@@ -82,7 +82,7 @@ try {
         }
     }
     Check "HTTP server responds" $healthy
-    Check "Reported version is 1.2.4" ($healthy -and $health.version -eq "1.2.4") "version=$($health.version)"
+    Check "Reported version is 1.2.5" ($healthy -and $health.version -eq "1.2.5") "version=$($health.version)"
 
     Add-Type -AssemblyName UIAutomationClient
     Add-Type -AssemblyName UIAutomationTypes
