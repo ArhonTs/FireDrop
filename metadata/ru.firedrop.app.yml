@@ -38,7 +38,7 @@ Repo: https://github.com/ArhonTs/FireDrop.git
 Builds:
 - versionName: '1.2.5'
   versionCode: 8
-  commit: v1.2.5
+  commit: c872cf5cdecbcbd107505165320c1125e56511b9
   output: Android/build/FireDrop-unsigned.apk
   build: |-
     bash Android/fdroid-build.sh
