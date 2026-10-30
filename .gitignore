@@ -14,3 +14,6 @@ Android/keystore/
 
 verification/sender-harness/bin/
 verification/sender-harness/obj/
+
+# Local F-Droid submission notes (not app source).
+.fdroid-notes/
